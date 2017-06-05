@@ -50,6 +50,45 @@ LOCAL_MODULE := retroarch-activity
 
 LOCAL_SRC_FILES  +=	\
                     $(RARCH_DIR)/griffin/griffin_back.c \
+                    $(RARCH_DIR)/menu/menu_driver.c \
+                    $(RARCH_DIR)/menu/menu_input.c \
+                    $(RARCH_DIR)/menu/menu_event.c \
+                    $(RARCH_DIR)/menu/menu_entries.c \
+                    $(RARCH_DIR)/menu/menu_setting.c \
+                    $(RARCH_DIR)/menu/menu_cbs.c \
+                    $(RARCH_DIR)/menu/menu_content.c \
+                    $(RARCH_DIR)/menu/widgets/menu_entry.c \
+                    $(RARCH_DIR)/menu/widgets/menu_filebrowser.c \
+                    $(RARCH_DIR)/menu/widgets/menu_dialog.c \
+                    $(RARCH_DIR)/menu/widgets/menu_input_dialog.c \
+                    $(RARCH_DIR)/menu/widgets/menu_input_bind_dialog.c \
+                    $(RARCH_DIR)/menu/widgets/menu_list.c \
+                    $(RARCH_DIR)/menu/widgets/menu_osk.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_ok.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_cancel.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_select.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_start.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_info.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_refresh.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_left.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_right.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_title.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_deferred_push.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_scan.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_get_value.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_label.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_sublabel.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_up.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_down.c \
+                    $(RARCH_DIR)/menu/cbs/menu_cbs_contentlist_switch.c \
+                    $(RARCH_DIR)/menu/menu_shader.c \
+                    $(RARCH_DIR)/menu/menu_displaylist.c \
+                    $(RARCH_DIR)/menu/menu_animation.c \
+                    $(RARCH_DIR)/menu/drivers/null.c \
+                    $(RARCH_DIR)/menu/drivers/menu_generic.c \
+                    $(RARCH_DIR)/menu/drivers_display/menu_display_null.c \
+                    $(RARCH_DIR)/menu/drivers_display/menu_display_gl.c \
+                    $(RARCH_DIR)/menu/drivers_display/menu_display_vulkan.c \
                     $(RARCH_DIR)/menu/drivers/rgui.c \
                     $(RARCH_DIR)//menu/drivers/xmb.c \
                     $(RARCH_DIR)/menu/drivers/materialui.c \
