@@ -58,10 +58,10 @@ enum {
 #endif
 
 /* If using an SDK lower than 24 then add missing relative axis codes */
-#if __ANDROID_API__ < 24
+// #if __ANDROID_API__ < 24
 #define AMOTION_EVENT_AXIS_RELATIVE_X 27
 #define AMOTION_EVENT_AXIS_RELATIVE_Y 28
-#endif
+// #endif
 
 /* Use this to enable/disable using the touch screen as mouse */
 #define ENABLE_TOUCH_SCREEN_MOUSE 1
