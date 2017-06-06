@@ -1,3 +1,26 @@
+/* RetroArch - A frontend for libretro.
+* Copyright (C) 2010-2014 - Hans-Kristian Arntzen
+* Copyright (C) 2011-2017 - Daniel De Matteis
+*
+* RetroArch is free software: you can redistribute it and/or modify it under the terms
+* of the GNU General Public License as published by the Free Software Found-
+* ation, either version 3 of the License, or (at your option) any later version.
+*
+* RetroArch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+* PURPOSE. See the GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along with RetroArch.
+* If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#if defined(HAVE_CG) || defined(HAVE_HLSL) || defined(HAVE_GLSL)
+#define HAVE_SHADERS
+#endif
+
+#if defined(HAVE_ZLIB) || defined(HAVE_7ZIP)
+#define HAVE_COMPRESSION
+#endif
 
 #include <compat/posix_string.h>
 
@@ -791,7 +814,7 @@ UI
 /*============================================================
 MAIN
 ============================================================ */
-//#include "../frontend/frontend.c"
+#include "../frontend/frontend.c"
 
 /*============================================================
 GIT
@@ -805,21 +828,334 @@ GIT
 /*============================================================
 RETROARCH
 ============================================================ */
+#include "../core_impl.c"
+#include "../retroarch.c"
+#include "../dirs.c"
+#include "../paths.c"
+#include "../libretro-common/queues/task_queue.c"
+
+#include "../msg_hash.c"
+#ifdef HAVE_LANGEXTRA
+#include "../intl/msg_hash_de.c"
+#include "../intl/msg_hash_es.c"
+#include "../intl/msg_hash_eo.c"
+#include "../intl/msg_hash_fr.c"
+#include "../intl/msg_hash_it.c"
+#include "../intl/msg_hash_ja.c"
+#include "../intl/msg_hash_ko.c"
+#include "../intl/msg_hash_nl.c"
+#include "../intl/msg_hash_pt_br.c"
+#include "../intl/msg_hash_pt_pt.c"
+#include "../intl/msg_hash_pl.c"
+#include "../intl/msg_hash_ru.c"
+#include "../intl/msg_hash_vn.c"
+#include "../intl/msg_hash_chs.c"
+#endif
+
+#include "../intl/msg_hash_us.c"
+
+/*============================================================
+WIFI
+============================================================ */
+#include "../wifi/wifi_driver.c"
+
+#include "../wifi/drivers/nullwifi.c"
+
+#ifdef HAVE_LAKKA
+#include "../wifi/drivers/connmanctl.c"
+#endif
+
+/*============================================================
+RECORDING
+============================================================ */
+#include "../movie.c"
+#include "../record/record_driver.c"
+#include "../record/drivers/record_null.c"
+
+#ifdef HAVE_FFMPEG
+#include "../record/drivers/record_ffmpeg.c"
+#endif
+
+/*============================================================
+THREAD
+============================================================ */
+#if defined(HAVE_THREADS) && defined(XENON)
+#include "../thread/xenon_sdl_threads.c"
+#elif defined(HAVE_THREADS)
+#include "../libretro-common/rthreads/rthreads.c"
+#include "../gfx/video_thread_wrapper.c"
+#include "../audio/audio_thread_wrapper.c"
+#endif
 
 
+/*============================================================
+NETPLAY
+============================================================ */
+#ifdef HAVE_NETWORKING
+#define JSON_STATIC /* must come before netplay_room_parse and jsonsax_full */
+#include "../network/netplay/netplay_delta.c"
+#include "../network/netplay/netplay_frontend.c"
+#include "../network/netplay/netplay_handshake.c"
+#include "../network/netplay/netplay_init.c"
+#include "../network/netplay/netplay_io.c"
+#include "../network/netplay/netplay_sync.c"
+#include "../network/netplay/netplay_discovery.c"
+#include "../network/netplay/netplay_buf.c"
+#include "../network/netplay/netplay_room_parse.c"
+#include "../libretro-common/net/net_compat.c"
+#include "../libretro-common/net/net_socket.c"
+#include "../libretro-common/net/net_http.c"
+#include "../libretro-common/net/net_natt.c"
+#include "../libretro-common/formats/json/jsonsax_full.c"
+#ifndef HAVE_SOCKET_LEGACY
+#include "../libretro-common/net/net_ifinfo.c"
+#endif
+#include "../tasks/task_http.c"
+#include "../tasks/task_netplay_lan_scan.c"
+#include "../tasks/task_netplay_nat_traversal.c"
+#include "../tasks/task_wifi.c"
+#include "../tasks/task_netplay_find_content.c"
+#endif
 
-//#include "../intl/msg_hash_de.c"
-//#include "../intl/msg_hash_es.c"
-//#include "../intl/msg_hash_eo.c"
-//#include "../intl/msg_hash_fr.c"
-//#include "../intl/msg_hash_it.c"
-//#include "../intl/msg_hash_ja.c"
-//#include "../intl/msg_hash_ko.c"
-//#include "../intl/msg_hash_nl.c"
-//#include "../intl/msg_hash_pt_br.c"
+/*============================================================
+DATA RUNLOOP
+============================================================ */
+#include "../tasks/task_powerstate.c"
+#include "../tasks/task_content.c"
+#include "../tasks/task_save.c"
+#include "../tasks/task_image.c"
+#include "../tasks/task_file_transfer.c"
+#ifdef HAVE_ZLIB
+#include "../tasks/task_decompress.c"
+#endif
+#ifdef HAVE_LIBRETRODB
+#include "../tasks/task_database.c"
+#include "../tasks/task_database_cue.c"
+#endif
+
+/*============================================================
+SCREENSHOTS
+============================================================ */
+#include "../tasks/task_screenshot.c"
+
+/*============================================================
+PLAYLISTS
+============================================================ */
+#include "../playlist.c"
+
+/*============================================================
+MENU
+============================================================ */
+#ifdef HAVE_MENU
+#include "../menu/menu_driver.c"
+#include "../menu/menu_input.c"
+#include "../menu/menu_event.c"
+#include "../menu/menu_entries.c"
+#include "../menu/menu_setting.c"
+#include "../menu/menu_cbs.c"
+#include "../menu/menu_content.c"
+#include "../menu/widgets/menu_entry.c"
+#include "../menu/widgets/menu_filebrowser.c"
+#include "../menu/widgets/menu_dialog.c"
+#include "../menu/widgets/menu_input_dialog.c"
+#include "../menu/widgets/menu_input_bind_dialog.c"
+#include "../menu/widgets/menu_list.c"
+#include "../menu/widgets/menu_osk.c"
+#include "../menu/cbs/menu_cbs_ok.c"
+#include "../menu/cbs/menu_cbs_cancel.c"
+#include "../menu/cbs/menu_cbs_select.c"
+#include "../menu/cbs/menu_cbs_start.c"
+#include "../menu/cbs/menu_cbs_info.c"
+#include "../menu/cbs/menu_cbs_refresh.c"
+#include "../menu/cbs/menu_cbs_left.c"
+#include "../menu/cbs/menu_cbs_right.c"
+#include "../menu/cbs/menu_cbs_title.c"
+#include "../menu/cbs/menu_cbs_deferred_push.c"
+#include "../menu/cbs/menu_cbs_scan.c"
+#include "../menu/cbs/menu_cbs_get_value.c"
+#include "../menu/cbs/menu_cbs_label.c"
+#include "../menu/cbs/menu_cbs_sublabel.c"
+#include "../menu/cbs/menu_cbs_up.c"
+#include "../menu/cbs/menu_cbs_down.c"
+#include "../menu/cbs/menu_cbs_contentlist_switch.c"
+#include "../menu/menu_shader.c"
+#include "../menu/menu_displaylist.c"
+#include "../menu/menu_animation.c"
+
+#include "../menu/drivers/null.c"
+#include "../menu/drivers/menu_generic.c"
+
+#include "../menu/drivers_display/menu_display_null.c"
+
+#ifdef HAVE_OPENGL
+#include "../menu/drivers_display/menu_display_gl.c"
+#endif
+
+#ifdef HAVE_VULKAN
+#include "../menu/drivers_display/menu_display_vulkan.c"
+#endif
+
+#ifdef HAVE_VITA2D
+#include "../menu/drivers_display/menu_display_vita2d.c"
+#endif
+
+#ifdef _3DS
+#include "../menu/drivers_display/menu_display_ctr.c"
+#endif
+
+#ifdef WIIU
+#include "../menu/drivers_display/menu_display_wiiu.c"
+#endif
+
+#ifdef HAVE_CACA
+#include "../menu/drivers_display/menu_display_caca.c"
+#endif
+
+#ifdef DJGPP
+#include "../menu/drivers_display/menu_display_vga.c"
+#endif
+
+#if defined(_WIN32) && !defined(_XBOX)
+#include "../menu/drivers_display/menu_display_gdi.c"
+#endif
+
+#endif
 
 
+#ifdef HAVE_RGUI
+#include "../menu/drivers/rgui.c"
+#endif
 
+#if defined(HAVE_OPENGL) || defined(HAVE_VITA2D) || defined(_3DS) || defined(_MSC_VER)
+#ifdef HAVE_XMB
+#include "../menu/drivers/xmb.c"
+#endif
 
+#ifdef HAVE_MATERIALUI
+#include "../menu/drivers/materialui.c"
+#endif
 
+#ifdef HAVE_NUKLEAR
+#include "../menu/drivers/nuklear/nk_common.c"
+#include "../menu/drivers/nuklear/nk_menu.c"
+#include "../menu/drivers/nuklear/nk_wnd_shader_parameters.c"
+#include "../menu/drivers/nuklear/nk_wnd_file_picker.c"
+#include "../menu/drivers/nuklear/nk_wnd_settings.c"
+#include "../menu/drivers/nuklear/nk_wnd_main.c"
+#include "../menu/drivers/nuklear.c"
+#endif
 
+#ifdef HAVE_ZARCH
+#include "../menu/drivers/zarch.c"
+#endif
+
+#endif
+
+#ifdef HAVE_NETWORKGAMEPAD
+#include "../input/input_remote.c"
+#include "../cores/libretro-net-retropad/net_retropad_core.c"
+#endif
+
+#include "../command.c"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if defined(HAVE_NETWORKING)
+#include "../libretro-common/net/net_http_parse.c"
+#endif
+
+/*============================================================
+DEPENDENCIES
+============================================================ */
+#ifdef WANT_ZLIB
+#include "../deps/libz/adler32.c"
+#include "../deps/libz/compress.c"
+#include "../deps/libz/crc32.c"
+#include "../deps/libz/deflate.c"
+#include "../deps/libz/gzclose.c"
+#include "../deps/libz/gzlib.c"
+#include "../deps/libz/gzread.c"
+#include "../deps/libz/gzwrite.c"
+#include "../deps/libz/inffast.c"
+#include "../deps/libz/inflate.c"
+#include "../deps/libz/inftrees.c"
+#include "../deps/libz/trees.c"
+#include "../deps/libz/uncompr.c"
+#include "../deps/libz/zutil.c"
+#endif
+
+#ifdef HAVE_7ZIP
+#include "../deps/7zip/7zIn.c"
+#include "../deps/7zip/7zAlloc.c"
+#include "../deps/7zip/Bra86.c"
+#include "../deps/7zip/7zFile.c"
+#include "../deps/7zip/7zStream.c"
+#include "../deps/7zip/7zBuf2.c"
+#include "../deps/7zip/LzmaDec.c"
+#include "../deps/7zip/7zCrcOpt.c"
+#include "../deps/7zip/Bra.c"
+#include "../deps/7zip/7zDec.c"
+#include "../deps/7zip/Bcj2.c"
+#include "../deps/7zip/7zCrc.c"
+#include "../deps/7zip/Lzma2Dec.c"
+#include "../deps/7zip/7zBuf.c"
+#endif
+
+/*============================================================
+XML
+============================================================ */
+#if 0
+#ifndef HAVE_LIBXML2
+#define RXML_LIBXML2_COMPAT
+#include "../libretro-common/formats/xml/rxml.c"
+#endif
+#endif
+
+/*============================================================
+ AUDIO UTILS
+============================================================ */
+#include "../libretro-common/audio/conversion/s16_to_float.c"
+#include "../libretro-common/audio/conversion/float_to_s16.c"
+#include "../libretro-common/audio/audio_mix.c"
+
+/*============================================================
+ LIBRETRODB
+============================================================ */
+#ifdef HAVE_LIBRETRODB
+#include "../libretro-db/bintree.c"
+#include "../libretro-db/libretrodb.c"
+#include "../libretro-db/rmsgpack.c"
+#include "../libretro-db/rmsgpack_dom.c"
+#include "../libretro-db/query.c"
+#include "../database_info.c"
+#endif
+
+#if defined(HAVE_BUILTINMINIUPNPC)
+#include "../deps/miniupnpc/igd_desc_parse.c"
+#include "../deps/miniupnpc/upnpreplyparse.c"
+#include "../deps/miniupnpc/upnpcommands.c"
+#include "../deps/miniupnpc/upnperrors.c"
+#include "../deps/miniupnpc/connecthostport.c"
+#include "../deps/miniupnpc/portlistingparse.c"
+#include "../deps/miniupnpc/receivedata.c"
+#include "../deps/miniupnpc/upnpdev.c"
+#include "../deps/miniupnpc/minissdpc.c"
+#include "../deps/miniupnpc/miniwget.c"
+#include "../deps/miniupnpc/miniupnpc.c"
+#include "../deps/miniupnpc/minixml.c"
+#include "../deps/miniupnpc/minisoap.c"
+#endif
+
+/*============================================================
+HTTP SERVER
+============================================================ */
+#if defined(HAVE_HTTPSERVER) && defined(HAVE_ZLIB)
+#include "../deps/civetweb/civetweb.c"
+#include "network/httpserver/httpserver.c"
+#endif
+
+#ifdef __cplusplus
+}
+#endif

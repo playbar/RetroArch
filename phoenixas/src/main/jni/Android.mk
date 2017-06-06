@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 
 RARCH_DIR := ../../../..
 
-HAVE_NEON   := 1
+HAVE_NEON   := 0
 HAVE_LOGGER := 0
 HAVE_VULKAN := 1
 
@@ -49,139 +49,7 @@ endif
 LOCAL_MODULE := retroarch-activity
 
 LOCAL_SRC_FILES  +=	\
-                    $(RARCH_DIR)/griffin/griffin_back.c \
-                    $(RARCH_DIR)/core_impl.c \
-                    $(RARCH_DIR)/retroarch.c \
-                    $(RARCH_DIR)/dirs.c \
-                    $(RARCH_DIR)/paths.c \
-                    $(RARCH_DIR)/libretro-common/queues/task_queue.c \
-                    $(RARCH_DIR)/msg_hash.c \
-                    $(RARCH_DIR)/intl/msg_hash_pt_pt.c \
-                    $(RARCH_DIR)/intl/msg_hash_pl.c \
-                    $(RARCH_DIR)/intl/msg_hash_ru.c \
-                    $(RARCH_DIR)/intl/msg_hash_vn.c \
-                    $(RARCH_DIR)/intl/msg_hash_chs.c \
-                    $(RARCH_DIR)/intl/msg_hash_us.c \
-                    $(RARCH_DIR)/wifi/wifi_driver.c \
-                    $(RARCH_DIR)/wifi/drivers/nullwifi.c \
-                    $(RARCH_DIR)/movie.c \
-                    $(RARCH_DIR)/record/record_driver.c \
-                    $(RARCH_DIR)/record/drivers/record_null.c \
-                    $(RARCH_DIR)/libretro-common/rthreads/rthreads.c \
-                    $(RARCH_DIR)/gfx/video_thread_wrapper.c \
-                    $(RARCH_DIR)/audio/audio_thread_wrapper.c \
-                    $(RARCH_DIR)/network/netplay/netplay_delta.c \
-                    $(RARCH_DIR)/network/netplay/netplay_frontend.c \
-                    $(RARCH_DIR)/network/netplay/netplay_handshake.c \
-                    $(RARCH_DIR)/network/netplay/netplay_init.c \
-                    $(RARCH_DIR)/network/netplay/netplay_io.c \
-                    $(RARCH_DIR)/network/netplay/netplay_sync.c \
-                    $(RARCH_DIR)/network/netplay/netplay_discovery.c \
-                    $(RARCH_DIR)/network/netplay/netplay_buf.c \
-                    $(RARCH_DIR)/network/netplay/netplay_room_parse.c \
-                    $(RARCH_DIR)/libretro-common/net/net_compat.c \
-                    $(RARCH_DIR)/libretro-common/net/net_socket.c \
-                    $(RARCH_DIR)/libretro-common/net/net_http.c \
-                    $(RARCH_DIR)/libretro-common/net/net_natt.c \
-                    $(RARCH_DIR)/libretro-common/formats/json/jsonsax_full.c \
-                    $(RARCH_DIR)/libretro-common/net/net_ifinfo.c \
-                    $(RARCH_DIR)/tasks/task_http.c \
-                    $(RARCH_DIR)/tasks/task_netplay_lan_scan.c \
-                    $(RARCH_DIR)/tasks/task_netplay_nat_traversal.c \
-                    $(RARCH_DIR)/tasks/task_wifi.c \
-                    $(RARCH_DIR)/tasks/task_netplay_find_content.c \
-                    $(RARCH_DIR)/tasks/task_powerstate.c \
-                    $(RARCH_DIR)/tasks/task_content.c \
-                    $(RARCH_DIR)/tasks/task_save.c \
-                    $(RARCH_DIR)/tasks/task_image.c \
-                    $(RARCH_DIR)/tasks/task_file_transfer.c \
-                    $(RARCH_DIR)/tasks/task_decompress.c \
-                    $(RARCH_DIR)/tasks/task_database.c \
-                    $(RARCH_DIR)/tasks/task_database_cue.c \
-                    $(RARCH_DIR)/tasks/task_screenshot.c \
-                    $(RARCH_DIR)/playlist.c \
-                    $(RARCH_DIR)/menu/menu_driver.c \
-                    $(RARCH_DIR)/menu/menu_input.c \
-                    $(RARCH_DIR)/menu/menu_event.c \
-                    $(RARCH_DIR)/menu/menu_entries.c \
-                    $(RARCH_DIR)/menu/menu_setting.c \
-                    $(RARCH_DIR)/menu/menu_cbs.c \
-                    $(RARCH_DIR)/menu/menu_content.c \
-                    $(RARCH_DIR)/menu/widgets/menu_entry.c \
-                    $(RARCH_DIR)/menu/widgets/menu_filebrowser.c \
-                    $(RARCH_DIR)/menu/widgets/menu_dialog.c \
-                    $(RARCH_DIR)/menu/widgets/menu_input_dialog.c \
-                    $(RARCH_DIR)/menu/widgets/menu_input_bind_dialog.c \
-                    $(RARCH_DIR)/menu/widgets/menu_list.c \
-                    $(RARCH_DIR)/menu/widgets/menu_osk.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_ok.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_cancel.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_select.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_start.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_info.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_refresh.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_left.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_right.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_title.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_deferred_push.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_scan.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_get_value.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_label.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_sublabel.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_up.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_down.c \
-                    $(RARCH_DIR)/menu/cbs/menu_cbs_contentlist_switch.c \
-                    $(RARCH_DIR)/menu/menu_shader.c \
-                    $(RARCH_DIR)/menu/menu_displaylist.c \
-                    $(RARCH_DIR)/menu/menu_animation.c \
-                    $(RARCH_DIR)/menu/drivers/null.c \
-                    $(RARCH_DIR)/menu/drivers/menu_generic.c \
-                    $(RARCH_DIR)/menu/drivers_display/menu_display_null.c \
-                    $(RARCH_DIR)/menu/drivers_display/menu_display_gl.c \
-                    $(RARCH_DIR)/menu/drivers_display/menu_display_vulkan.c \
-                    $(RARCH_DIR)/menu/drivers/rgui.c \
-                    $(RARCH_DIR)//menu/drivers/xmb.c \
-                    $(RARCH_DIR)/menu/drivers/materialui.c \
-                    $(RARCH_DIR)/input/input_remote.c \
-                    $(RARCH_DIR)/cores/libretro-net-retropad/net_retropad_core.c \
-                    $(RARCH_DIR)/command.c \
-                    $(RARCH_DIR)/libretro-common/net/net_http_parse.c \
-                    $(RARCH_DIR)/deps/7zip/7zIn.c \
-                    $(RARCH_DIR)/deps/7zip/7zAlloc.c \
-                    $(RARCH_DIR)/deps/7zip/Bra86.c \
-                    $(RARCH_DIR)/deps/7zip/7zFile.c \
-                    $(RARCH_DIR)/deps/7zip/7zStream.c \
-                    $(RARCH_DIR)/deps/7zip/7zBuf2.c \
-                    $(RARCH_DIR)/deps/7zip/LzmaDec.c \
-                    $(RARCH_DIR)/deps/7zip/7zCrcOpt.c \
-                    $(RARCH_DIR)/deps/7zip/Bra.c \
-                    $(RARCH_DIR)/deps/7zip/7zDec.c \
-                    $(RARCH_DIR)/deps/7zip/Bcj2.c \
-                    $(RARCH_DIR)/deps/7zip/7zCrc.c \
-                    $(RARCH_DIR)/deps/7zip/Lzma2Dec.c \
-                    $(RARCH_DIR)/deps/7zip/7zBuf.c \
-                    $(RARCH_DIR)/libretro-common/audio/conversion/s16_to_float.c \
-                    $(RARCH_DIR)/libretro-common/audio/conversion/float_to_s16.c \
-                    $(RARCH_DIR)/libretro-common/audio/audio_mix.c \
-                    $(RARCH_DIR)/libretro-db/bintree.c \
-                    $(RARCH_DIR)/libretro-db/libretrodb.c \
-                    $(RARCH_DIR)/libretro-db/rmsgpack.c \
-                    $(RARCH_DIR)/libretro-db/rmsgpack_dom.c \
-                    $(RARCH_DIR)/libretro-db/query.c \
-                    $(RARCH_DIR)/database_info.c \
-                    $(RARCH_DIR)/deps/miniupnpc/igd_desc_parse.c \
-                    $(RARCH_DIR)/deps/miniupnpc/upnpreplyparse.c \
-                    $(RARCH_DIR)/deps/miniupnpc/upnpcommands.c \
-                    $(RARCH_DIR)/deps/miniupnpc/upnperrors.c \
-                    $(RARCH_DIR)/deps/miniupnpc/connecthostport.c \
-                    $(RARCH_DIR)/deps/miniupnpc/portlistingparse.c \
-                    $(RARCH_DIR)/deps/miniupnpc/receivedata.c \
-                    $(RARCH_DIR)/deps/miniupnpc/upnpdev.c \
-                    $(RARCH_DIR)/deps/miniupnpc/minissdpc.c \
-                    $(RARCH_DIR)/deps/miniupnpc/miniwget.c \
-                    $(RARCH_DIR)/deps/miniupnpc/miniupnpc.c \
-                    $(RARCH_DIR)/deps/miniupnpc/minixml.c \
-                    $(RARCH_DIR)/deps/miniupnpc/minisoap.c \
+                    $(RARCH_DIR)/griffin/griffin1.c \
 					$(RARCH_DIR)/griffin/griffin_cpp.cpp \
 
 
@@ -198,8 +66,13 @@ else
    DEFINES += -DHAVE_OPENGLES2
 endif
 
-DEFINES += -DRARCH_MOBILE -DHAVE_GRIFFIN -DHAVE_STB_VORBIS -DHAVE_LANGEXTRA -DANDROID -DHAVE_DYNAMIC -DHAVE_OPENGL -DHAVE_FBO -DHAVE_OVERLAY -DHAVE_OPENGLES -DGLSL_DEBUG -DHAVE_DYLIB -DHAVE_EGL -DHAVE_GLSL -DHAVE_MENU -DHAVE_RGUI -DHAVE_ZLIB -DHAVE_RPNG -DHAVE_RJPEG -DHAVE_RBMP -DHAVE_RTGA -DINLINE=inline -DHAVE_THREADS -D__LIBRETRO__ -DHAVE_RSOUND -DHAVE_NETWORKGAMEPAD -DHAVE_NETWORKING -DRARCH_INTERNAL -DHAVE_FILTERS_BUILTIN -DHAVE_MATERIALUI -DHAVE_XMB -DHAVE_SHADERPIPELINE -DHAVE_LIBRETRODB -DHAVE_STB_FONT -DHAVE_IMAGEVIEWER -DHAVE_UPDATE_ASSETS -DHAVE_CC_RESAMPLER -DHAVE_MINIUPNPC -DHAVE_BUILTINMINIUPNPC -DMINIUPNPC_SET_SOCKET_TIMEOUT -DMINIUPNPC_GET_SRC_ADDR
-DEFINES += -DWANT_IFADDRS -DJSON_STATIC
+DEFINES += -DRARCH_MOBILE -DHAVE_GRIFFIN -DHAVE_STB_VORBIS -DHAVE_LANGEXTRA -DANDROID -DHAVE_DYNAMIC -DHAVE_OPENGL -DHAVE_FBO -DHAVE_OVERLAY
+DEFINES += -DHAVE_OPENGLES -DGLSL_DEBUG -DHAVE_DYLIB -DHAVE_EGL -DHAVE_GLSL -DHAVE_MENU -DHAVE_RGUI -DHAVE_ZLIB -DHAVE_RPNG -DHAVE_RJPEG
+DEFINES += -DHAVE_RBMP -DHAVE_RTGA -DINLINE=inline -DHAVE_THREADS -D__LIBRETRO__ -DHAVE_RSOUND -DHAVE_NETWORKGAMEPAD -DHAVE_NETWORKING
+DEFINES += -DRARCH_INTERNAL -DHAVE_FILTERS_BUILTIN -DHAVE_MATERIALUI -DHAVE_XMB -DHAVE_SHADERPIPELINE -DHAVE_LIBRETRODB -DHAVE_STB_FONT
+DEFINES += -DHAVE_IMAGEVIEWER -DHAVE_UPDATE_ASSETS -DHAVE_CC_RESAMPLER -DHAVE_MINIUPNPC -DHAVE_BUILTINMINIUPNPC
+DEFINES += -DMINIUPNPC_SET_SOCKET_TIMEOUT -DMINIUPNPC_GET_SRC_ADDR
+DEFINES += -DWANT_IFADDRS -DHAVE_SHADERS -DHAVE_COMPRESSION -DJSON_STATIC
 
 ifeq ($(HAVE_VULKAN),1)
 DEFINES += -DHAVE_VULKAN
@@ -209,7 +82,7 @@ DEFINES += -DHAVE_CHEEVOS
 DEFINES += -DHAVE_SL
 
 LOCAL_CFLAGS   += -Wall -std=gnu99 -pthread -Wno-unused-function -fno-stack-protector -funroll-loops $(DEFINES)
-LOCAL_CPPFLAGS := -fexceptions -fpermissive -std=gnu++11 -fno-rtti -Wno-reorder $(DEFINES)
+LOCAL_CPPFLAGS := -fexceptions -fpermissive -std=c++11 -fno-rtti -Wno-reorder $(DEFINES)
 
 # Let ndk-build set the optimization flags but remove -O3 like in cf3c3
 LOCAL_CFLAGS := $(subst -O3,-O2,$(LOCAL_CFLAGS))

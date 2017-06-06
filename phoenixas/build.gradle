@@ -1,18 +1,24 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId 'com.retroarch'
         minSdkVersion 23
-        targetSdkVersion 23
-//        renderscriptTargetApi 19
-//        renderscriptSupportModeEnabled true
-        versionCode 1
+        targetSdkVersion 24
+        versionCode 55
         versionName "1.0"
-        ndk {
-            abiFilters 'armeabi-v7a'
+//        ndk{
+//            abiFilters 'armeabi-v7a'
+//        }
+        externalNativeBuild {
+            cmake {
+                abiFilters 'armeabi-v7a'
+                arguments "-DANDROID_STL=c++_static",
+                        "-DANDROID_TOOLCHAIN=clang",
+                        '-DANDROID_PLATFORM=android-23'
+            }
         }
     }
     buildTypes {
@@ -22,8 +28,12 @@ android {
         }
     }
     externalNativeBuild {
-        ndkBuild {
-            path "src/main/jni/Android.mk"
+//        ndkBuild {
+//            path "src/main/jni/Android.mk"
+//        }
+
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
         }
     }
 
