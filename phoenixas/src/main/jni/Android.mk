@@ -50,6 +50,11 @@ LOCAL_MODULE := retroarch-activity
 
 LOCAL_SRC_FILES  +=	\
                     $(RARCH_DIR)/griffin/griffin_back.c \
+                    $(RARCH_DIR)/wifi/wifi_driver.c \
+                    $(RARCH_DIR)/wifi/drivers/nullwifi.c \
+                    $(RARCH_DIR)/movie.c \
+                    $(RARCH_DIR)/record/record_driver.c \
+                    $(RARCH_DIR)/record/drivers/record_null.c \
                     $(RARCH_DIR)/libretro-common/rthreads/rthreads.c \
                     $(RARCH_DIR)/gfx/video_thread_wrapper.c \
                     $(RARCH_DIR)/audio/audio_thread_wrapper.c \

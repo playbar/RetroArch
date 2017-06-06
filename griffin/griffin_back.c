@@ -857,21 +857,22 @@ RETROARCH
 /*============================================================
 WIFI
 ============================================================ */
-#include "../wifi/wifi_driver.c"
-
-#include "../wifi/drivers/nullwifi.c"
+//#include "../wifi/wifi_driver.c"
+//#include "../wifi/drivers/nullwifi.c"
 
 #ifdef HAVE_LAKKA
+oo
 #include "../wifi/drivers/connmanctl.c"
 #endif
 
 /*============================================================
 RECORDING
 ============================================================ */
-#include "../movie.c"
-#include "../record/record_driver.c"
-#include "../record/drivers/record_null.c"
+//#include "../movie.c"
+//#include "../record/record_driver.c"
+//#include "../record/drivers/record_null.c"
 
 #ifdef HAVE_FFMPEG
+oo
 #include "../record/drivers/record_ffmpeg.c"
 #endif
