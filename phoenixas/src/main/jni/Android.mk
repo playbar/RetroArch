@@ -50,6 +50,39 @@ LOCAL_MODULE := retroarch-activity
 
 LOCAL_SRC_FILES  +=	\
                     $(RARCH_DIR)/griffin/griffin_back.c \
+                    $(RARCH_DIR)/libretro-common/rthreads/rthreads.c \
+                    $(RARCH_DIR)/gfx/video_thread_wrapper.c \
+                    $(RARCH_DIR)/audio/audio_thread_wrapper.c \
+                    $(RARCH_DIR)/network/netplay/netplay_delta.c \
+                    $(RARCH_DIR)/network/netplay/netplay_frontend.c \
+                    $(RARCH_DIR)/network/netplay/netplay_handshake.c \
+                    $(RARCH_DIR)/network/netplay/netplay_init.c \
+                    $(RARCH_DIR)/network/netplay/netplay_io.c \
+                    $(RARCH_DIR)/network/netplay/netplay_sync.c \
+                    $(RARCH_DIR)/network/netplay/netplay_discovery.c \
+                    $(RARCH_DIR)/network/netplay/netplay_buf.c \
+                    $(RARCH_DIR)/network/netplay/netplay_room_parse.c \
+                    $(RARCH_DIR)/libretro-common/net/net_compat.c \
+                    $(RARCH_DIR)/libretro-common/net/net_socket.c \
+                    $(RARCH_DIR)/libretro-common/net/net_http.c \
+                    $(RARCH_DIR)/libretro-common/net/net_natt.c \
+                    $(RARCH_DIR)/libretro-common/formats/json/jsonsax_full.c \
+                    $(RARCH_DIR)/libretro-common/net/net_ifinfo.c \
+                    $(RARCH_DIR)/tasks/task_http.c \
+                    $(RARCH_DIR)/tasks/task_netplay_lan_scan.c \
+                    $(RARCH_DIR)/tasks/task_netplay_nat_traversal.c \
+                    $(RARCH_DIR)/tasks/task_wifi.c \
+                    $(RARCH_DIR)/tasks/task_netplay_find_content.c \
+                    $(RARCH_DIR)/tasks/task_powerstate.c \
+                    $(RARCH_DIR)/tasks/task_content.c \
+                    $(RARCH_DIR)/tasks/task_save.c \
+                    $(RARCH_DIR)/tasks/task_image.c \
+                    $(RARCH_DIR)/tasks/task_file_transfer.c \
+                    $(RARCH_DIR)/tasks/task_decompress.c \
+                    $(RARCH_DIR)/tasks/task_database.c \
+                    $(RARCH_DIR)/tasks/task_database_cue.c \
+                    $(RARCH_DIR)/tasks/task_screenshot.c \
+                    $(RARCH_DIR)/playlist.c \
                     $(RARCH_DIR)/menu/menu_driver.c \
                     $(RARCH_DIR)/menu/menu_input.c \
                     $(RARCH_DIR)/menu/menu_event.c \
@@ -149,7 +182,7 @@ else
 endif
 
 DEFINES += -DRARCH_MOBILE -DHAVE_GRIFFIN -DHAVE_STB_VORBIS -DHAVE_LANGEXTRA -DANDROID -DHAVE_DYNAMIC -DHAVE_OPENGL -DHAVE_FBO -DHAVE_OVERLAY -DHAVE_OPENGLES -DGLSL_DEBUG -DHAVE_DYLIB -DHAVE_EGL -DHAVE_GLSL -DHAVE_MENU -DHAVE_RGUI -DHAVE_ZLIB -DHAVE_RPNG -DHAVE_RJPEG -DHAVE_RBMP -DHAVE_RTGA -DINLINE=inline -DHAVE_THREADS -D__LIBRETRO__ -DHAVE_RSOUND -DHAVE_NETWORKGAMEPAD -DHAVE_NETWORKING -DRARCH_INTERNAL -DHAVE_FILTERS_BUILTIN -DHAVE_MATERIALUI -DHAVE_XMB -DHAVE_SHADERPIPELINE -DHAVE_LIBRETRODB -DHAVE_STB_FONT -DHAVE_IMAGEVIEWER -DHAVE_UPDATE_ASSETS -DHAVE_CC_RESAMPLER -DHAVE_MINIUPNPC -DHAVE_BUILTINMINIUPNPC -DMINIUPNPC_SET_SOCKET_TIMEOUT -DMINIUPNPC_GET_SRC_ADDR
-DEFINES += -DWANT_IFADDRS
+DEFINES += -DWANT_IFADDRS -DJSON_STATIC
 
 ifeq ($(HAVE_VULKAN),1)
 DEFINES += -DHAVE_VULKAN
