@@ -821,240 +821,39 @@ GIT
 ============================================================ */
 
 #ifdef HAVE_GIT_VERSION
+oo
 #include "../version_git.c"
 #endif
 
 
-/*============================================================
-RETROARCH
-============================================================ */
-#include "../core_impl.c"
-#include "../retroarch.c"
-#include "../dirs.c"
-#include "../paths.c"
-#include "../libretro-common/queues/task_queue.c"
-
-#include "../msg_hash.c"
-#ifdef HAVE_LANGEXTRA
-#include "../intl/msg_hash_de.c"
-#include "../intl/msg_hash_es.c"
-#include "../intl/msg_hash_eo.c"
-#include "../intl/msg_hash_fr.c"
-#include "../intl/msg_hash_it.c"
-#include "../intl/msg_hash_ja.c"
-#include "../intl/msg_hash_ko.c"
-#include "../intl/msg_hash_nl.c"
-#include "../intl/msg_hash_pt_br.c"
-#include "../intl/msg_hash_pt_pt.c"
-#include "../intl/msg_hash_pl.c"
-#include "../intl/msg_hash_ru.c"
-#include "../intl/msg_hash_vn.c"
-#include "../intl/msg_hash_chs.c"
-#endif
-
-#include "../intl/msg_hash_us.c"
-
-/*============================================================
-WIFI
-============================================================ */
-#include "../wifi/wifi_driver.c"
-
-#include "../wifi/drivers/nullwifi.c"
-
-#ifdef HAVE_LAKKA
-#include "../wifi/drivers/connmanctl.c"
-#endif
-
-/*============================================================
-RECORDING
-============================================================ */
-#include "../movie.c"
-#include "../record/record_driver.c"
-#include "../record/drivers/record_null.c"
-
-#ifdef HAVE_FFMPEG
-#include "../record/drivers/record_ffmpeg.c"
-#endif
-
-/*============================================================
-THREAD
-============================================================ */
-#if defined(HAVE_THREADS) && defined(XENON)
-#include "../thread/xenon_sdl_threads.c"
-#elif defined(HAVE_THREADS)
-#include "../libretro-common/rthreads/rthreads.c"
-#include "../gfx/video_thread_wrapper.c"
-#include "../audio/audio_thread_wrapper.c"
-#endif
+///*============================================================
+//RETROARCH
+//============================================================ */
+//#include "../core_impl.c"
+//#include "../retroarch.c"
+//#include "../dirs.c"
+//#include "../paths.c"
+//#include "../libretro-common/queues/task_queue.c"
+//
+//#include "../msg_hash.c"
+//#ifdef HAVE_LANGEXTRA
+//#include "../intl/msg_hash_de.c"
+//#include "../intl/msg_hash_es.c"
+//#include "../intl/msg_hash_eo.c"
+//#include "../intl/msg_hash_fr.c"
+//#include "../intl/msg_hash_it.c"
+//#include "../intl/msg_hash_ja.c"
+//#include "../intl/msg_hash_ko.c"
+//#include "../intl/msg_hash_nl.c"
+//#include "../intl/msg_hash_pt_br.c"
+//#include "../intl/msg_hash_pt_pt.c"
+//#include "../intl/msg_hash_pl.c"
+//#include "../intl/msg_hash_ru.c"
+//#include "../intl/msg_hash_vn.c"
+//#include "../intl/msg_hash_chs.c"
+//#endif
+//
+//#include "../intl/msg_hash_us.c"
 
 
-/*============================================================
-NETPLAY
-============================================================ */
-#ifdef HAVE_NETWORKING
-#define JSON_STATIC /* must come before netplay_room_parse and jsonsax_full */
-#include "../network/netplay/netplay_delta.c"
-#include "../network/netplay/netplay_frontend.c"
-#include "../network/netplay/netplay_handshake.c"
-#include "../network/netplay/netplay_init.c"
-#include "../network/netplay/netplay_io.c"
-#include "../network/netplay/netplay_sync.c"
-#include "../network/netplay/netplay_discovery.c"
-#include "../network/netplay/netplay_buf.c"
-#include "../network/netplay/netplay_room_parse.c"
-#include "../libretro-common/net/net_compat.c"
-#include "../libretro-common/net/net_socket.c"
-#include "../libretro-common/net/net_http.c"
-#include "../libretro-common/net/net_natt.c"
-#include "../libretro-common/formats/json/jsonsax_full.c"
-#ifndef HAVE_SOCKET_LEGACY
-#include "../libretro-common/net/net_ifinfo.c"
-#endif
-#include "../tasks/task_http.c"
-#include "../tasks/task_netplay_lan_scan.c"
-#include "../tasks/task_netplay_nat_traversal.c"
-#include "../tasks/task_wifi.c"
-#include "../tasks/task_netplay_find_content.c"
-#endif
-
-/*============================================================
-DATA RUNLOOP
-============================================================ */
-#include "../tasks/task_powerstate.c"
-#include "../tasks/task_content.c"
-#include "../tasks/task_save.c"
-#include "../tasks/task_image.c"
-#include "../tasks/task_file_transfer.c"
-#ifdef HAVE_ZLIB
-#include "../tasks/task_decompress.c"
-#endif
-#ifdef HAVE_LIBRETRODB
-#include "../tasks/task_database.c"
-#include "../tasks/task_database_cue.c"
-#endif
-
-/*============================================================
-SCREENSHOTS
-============================================================ */
-#include "../tasks/task_screenshot.c"
-
-/*============================================================
-PLAYLISTS
-============================================================ */
-#include "../playlist.c"
-
-/*============================================================
-MENU
-============================================================ */
-#ifdef HAVE_MENU
-#include "../menu/menu_driver.c"
-#include "../menu/menu_input.c"
-#include "../menu/menu_event.c"
-#include "../menu/menu_entries.c"
-#include "../menu/menu_setting.c"
-#include "../menu/menu_cbs.c"
-#include "../menu/menu_content.c"
-#include "../menu/widgets/menu_entry.c"
-#include "../menu/widgets/menu_filebrowser.c"
-#include "../menu/widgets/menu_dialog.c"
-#include "../menu/widgets/menu_input_dialog.c"
-#include "../menu/widgets/menu_input_bind_dialog.c"
-#include "../menu/widgets/menu_list.c"
-#include "../menu/widgets/menu_osk.c"
-#include "../menu/cbs/menu_cbs_ok.c"
-#include "../menu/cbs/menu_cbs_cancel.c"
-#include "../menu/cbs/menu_cbs_select.c"
-#include "../menu/cbs/menu_cbs_start.c"
-#include "../menu/cbs/menu_cbs_info.c"
-#include "../menu/cbs/menu_cbs_refresh.c"
-#include "../menu/cbs/menu_cbs_left.c"
-#include "../menu/cbs/menu_cbs_right.c"
-#include "../menu/cbs/menu_cbs_title.c"
-#include "../menu/cbs/menu_cbs_deferred_push.c"
-#include "../menu/cbs/menu_cbs_scan.c"
-#include "../menu/cbs/menu_cbs_get_value.c"
-#include "../menu/cbs/menu_cbs_label.c"
-#include "../menu/cbs/menu_cbs_sublabel.c"
-#include "../menu/cbs/menu_cbs_up.c"
-#include "../menu/cbs/menu_cbs_down.c"
-#include "../menu/cbs/menu_cbs_contentlist_switch.c"
-#include "../menu/menu_shader.c"
-#include "../menu/menu_displaylist.c"
-#include "../menu/menu_animation.c"
-
-#include "../menu/drivers/null.c"
-#include "../menu/drivers/menu_generic.c"
-
-#include "../menu/drivers_display/menu_display_null.c"
-
-#ifdef HAVE_OPENGL
-#include "../menu/drivers_display/menu_display_gl.c"
-#endif
-
-#ifdef HAVE_VULKAN
-#include "../menu/drivers_display/menu_display_vulkan.c"
-#endif
-
-#ifdef HAVE_VITA2D
-#include "../menu/drivers_display/menu_display_vita2d.c"
-#endif
-
-#ifdef _3DS
-#include "../menu/drivers_display/menu_display_ctr.c"
-#endif
-
-#ifdef WIIU
-#include "../menu/drivers_display/menu_display_wiiu.c"
-#endif
-
-#ifdef HAVE_CACA
-#include "../menu/drivers_display/menu_display_caca.c"
-#endif
-
-#ifdef DJGPP
-#include "../menu/drivers_display/menu_display_vga.c"
-#endif
-
-#if defined(_WIN32) && !defined(_XBOX)
-#include "../menu/drivers_display/menu_display_gdi.c"
-#endif
-
-#endif
-
-
-#ifdef HAVE_RGUI
-#include "../menu/drivers/rgui.c"
-#endif
-
-#if defined(HAVE_OPENGL) || defined(HAVE_VITA2D) || defined(_3DS) || defined(_MSC_VER)
-#ifdef HAVE_XMB
-#include "../menu/drivers/xmb.c"
-#endif
-
-#ifdef HAVE_MATERIALUI
-#include "../menu/drivers/materialui.c"
-#endif
-
-#ifdef HAVE_NUKLEAR
-#include "../menu/drivers/nuklear/nk_common.c"
-#include "../menu/drivers/nuklear/nk_menu.c"
-#include "../menu/drivers/nuklear/nk_wnd_shader_parameters.c"
-#include "../menu/drivers/nuklear/nk_wnd_file_picker.c"
-#include "../menu/drivers/nuklear/nk_wnd_settings.c"
-#include "../menu/drivers/nuklear/nk_wnd_main.c"
-#include "../menu/drivers/nuklear.c"
-#endif
-
-#ifdef HAVE_ZARCH
-#include "../menu/drivers/zarch.c"
-#endif
-
-#endif
-
-#ifdef HAVE_NETWORKGAMEPAD
-#include "../input/input_remote.c"
-#include "../cores/libretro-net-retropad/net_retropad_core.c"
-#endif
-
-#include "../command.c"
 
