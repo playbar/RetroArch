@@ -37,6 +37,16 @@ add_library(retroarch-activity SHARED
             ${LIBRETRO_COMM_DIR}/audio/resampler/drivers/sinc_resampler_neon.S
             ${RARCH_DIR}/audio/drivers_resampler/cc_resampler_neon.S
                 ${RARCH_DIR}/griffin/griffin1.c
+                ${RARCH_DIR}/frontend/drivers/platform_linux.c
+                ${RARCH_DIR}/frontend/drivers/platform_null.c
+                ${RARCH_DIR}/core_info.c
+                ${RARCH_DIR}/ui/ui_companion_driver.c
+                ${RARCH_DIR}/ui/drivers/ui_null.c
+                ${RARCH_DIR}/ui/drivers/null/ui_null_window.c
+                ${RARCH_DIR}/ui/drivers/null/ui_null_browser_window.c
+                ${RARCH_DIR}/ui/drivers/null/ui_null_msg_window.c
+                ${RARCH_DIR}/ui/drivers/null/ui_null_application.c
+                ${RARCH_DIR}/frontend/frontend.c
                 ${RARCH_DIR}/core_impl.c
                 ${RARCH_DIR}/retroarch.c
                 ${RARCH_DIR}/dirs.c

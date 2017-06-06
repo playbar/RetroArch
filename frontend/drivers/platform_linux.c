@@ -36,6 +36,7 @@
 
 #ifdef ANDROID
 #include <sys/system_properties.h>
+#include <android/log.h>
 #ifdef __arm__
 #include <machine/cpu-features.h>
 #endif
@@ -482,7 +483,7 @@ void ANativeActivity_onCreate(ANativeActivity* activity,
          savedState, savedStateSize);
 }
 
-static void frontend_android_get_name(char *s, size_t len)
+void frontend_android_get_name(char *s, size_t len)
 {
    system_property_get("getprop", "ro.product.model", s);
 }
@@ -515,7 +516,7 @@ static void frontend_android_get_version(int32_t *major,
    }
 }
 
-static void frontend_android_get_version_sdk(int32_t *sdk)
+void frontend_android_get_version_sdk(int32_t *sdk)
 {
    char os_version_str[PROP_VALUE_MAX] = {0};
    system_property_get("getprop", "ro.build.version.sdk", os_version_str);
@@ -1505,7 +1506,7 @@ static void frontend_linux_get_env(int *argc,
          CALL_VOID_METHOD(env, android_app->activity->clazz,
                android_app->checkRuntimePermissions);
 
-      /* set paths depending on the ability to write 
+      /* set paths depending on the ability to write
        * to internal_storage_path */
 
       if(!string_is_empty(internal_storage_path))
@@ -1579,7 +1580,7 @@ static void frontend_linux_get_env(int *argc,
 
             switch (perms)
             {
-               /* Set defaults for this since we can't guarantee 
+               /* Set defaults for this since we can't guarantee
                 * saving on content dir will work in this case */
                case INTERNAL_STORAGE_APPDIR_WRITABLE:
                   fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_SRAM],
@@ -1608,7 +1609,7 @@ static void frontend_linux_get_env(int *argc,
                         internal_storage_app_path, "cheats",
                         sizeof(g_defaults.dirs[DEFAULT_DIR_CHEATS]));
 
-                  if(     !string_is_empty(screenshot_dir) 
+                  if(     !string_is_empty(screenshot_dir)
                         && test_permissions(screenshot_dir))
                   {
                      fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_SCREENSHOT],
@@ -1624,7 +1625,7 @@ static void frontend_linux_get_env(int *argc,
 
                   break;
                case INTERNAL_STORAGE_NOT_WRITABLE:
-                  /* Set defaults for this since we can't guarantee 
+                  /* Set defaults for this since we can't guarantee
                    * saving on content dir will work in this case. */
                   fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_SRAM],
                         app_dir, "saves",
@@ -1652,7 +1653,7 @@ static void frontend_linux_get_env(int *argc,
                         app_dir, "cheats",
                         sizeof(g_defaults.dirs[DEFAULT_DIR_CHEATS]));
 
-                  if(      !string_is_empty(screenshot_dir) 
+                  if(      !string_is_empty(screenshot_dir)
                         &&  test_permissions(screenshot_dir))
                   {
                      fill_pathname_join(g_defaults.dirs[DEFAULT_DIR_SCREENSHOT],
@@ -1740,7 +1741,7 @@ static void frontend_linux_get_env(int *argc,
 #endif
 
 #if 0
-      /* Set the OK/cancel menu buttons to the default 
+      /* Set the OK/cancel menu buttons to the default
        * ones used for Shield */
       g_defaults.menu.controls.set = true;
       g_defaults.menu.controls.menu_btn_ok     = RETRO_DEVICE_ID_JOYPAD_B;
@@ -2009,7 +2010,7 @@ static int frontend_linux_parse_drive_list(void *data, bool load_content)
    menu_entries_append_enum(list,
          "/storage",
          msg_hash_to_str(MSG_REMOVABLE_STORAGE),
-         enum_idx, 
+         enum_idx,
          FILE_TYPE_DIRECTORY, 0, 0);
 #endif
 
@@ -2149,7 +2150,7 @@ VALGRIND_PRINTF_BACKTRACE("SIGINT");
    if (linux_sighandler_quit == 1) {}
    if (linux_sighandler_quit == 2) exit(1);
    /* in case there's a second deadlock in a C++ destructor or something */
-   if (linux_sighandler_quit >= 3) abort(); 
+   if (linux_sighandler_quit >= 3) abort();
 }
 
 static void frontend_linux_install_signal_handlers(void)

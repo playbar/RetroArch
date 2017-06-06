@@ -764,66 +764,76 @@ FRONTEND
 
 #include "../frontend/frontend_driver.c"
 
-#if defined(_WIN32) && !defined(_XBOX)
-#include "../frontend/drivers/platform_win32.c"
-#endif
-#if defined(__CELLOS_LV2__)
-#include "../frontend/drivers/platform_ps3.c"
-#elif defined(GEKKO)
-#include "../frontend/drivers/platform_gx.c"
-#ifdef HW_RVL
-#include "../frontend/drivers/platform_wii.c"
-#endif
-#elif defined(PSP) || defined(VITA)
-#include "../frontend/drivers/platform_psp.c"
-#elif defined(_3DS)
-#include "../frontend/drivers/platform_ctr.c"
-#elif defined(XENON)
-#include "../frontend/drivers/platform_xenon.c"
-#elif defined(__QNX__)
-#include "../frontend/drivers/platform_qnx.c"
-#elif defined(__linux__)
-#include "../frontend/drivers/platform_linux.c"
-#elif defined(BSD) && !defined(__MACH__)
-#include "../frontend/drivers/platform_bsd.c"
-#elif defined(DJGPP)
-#include "../frontend/drivers/platform_dos.c"
-#endif
-#include "../frontend/drivers/platform_null.c"
+//#if defined(_WIN32) && !defined(_XBOX)
+//oo
+//#include "../frontend/drivers/platform_win32.c"
+//#endif
+//#if defined(__CELLOS_LV2__)
+//oo
+//#include "../frontend/drivers/platform_ps3.c"
+//#elif defined(GEKKO)
+//oo
+//#include "../frontend/drivers/platform_gx.c"
+//#ifdef HW_RVL
+//oo
+//#include "../frontend/drivers/platform_wii.c"
+//#endif
+//#elif defined(PSP) || defined(VITA)
+//oo
+//#include "../frontend/drivers/platform_psp.c"
+//#elif defined(_3DS)
+//oo
+//#include "../frontend/drivers/platform_ctr.c"
+//#elif defined(XENON)
+//oo
+//#include "../frontend/drivers/platform_xenon.c"
+//#elif defined(__QNX__)
+//oo
+//#include "../frontend/drivers/platform_qnx.c"
+//#elif defined(__linux__)
+//#include "../frontend/drivers/platform_linux.c"
+//#elif defined(BSD) && !defined(__MACH__)
+//oo
+//#include "../frontend/drivers/platform_bsd.c"
+//#elif defined(DJGPP)
+//oo
+//#include "../frontend/drivers/platform_dos.c"
+//#endif
 
-#include "../core_info.c"
+//#include "../frontend/drivers/platform_null.c"
+//#include "../core_info.c"
 
 /*============================================================
 UI
 ============================================================ */
-#include "../ui/ui_companion_driver.c"
-
-#include "../ui/drivers/ui_null.c"
-#include "../ui/drivers/null/ui_null_window.c"
-#include "../ui/drivers/null/ui_null_browser_window.c"
-#include "../ui/drivers/null/ui_null_msg_window.c"
-#include "../ui/drivers/null/ui_null_application.c"
-
-#if defined(_WIN32) && !defined(_XBOX)
-#include "../ui/drivers/ui_win32.c"
-#include "../ui/drivers/win32/ui_win32_browser_window.c"
-#include "../ui/drivers/win32/ui_win32_msg_window.c"
-#include "../ui/drivers/win32/ui_win32_application.c"
-#endif
+//#include "../ui/ui_companion_driver.c"
+//#include "../ui/drivers/ui_null.c"
+//#include "../ui/drivers/null/ui_null_window.c"
+//#include "../ui/drivers/null/ui_null_browser_window.c"
+//#include "../ui/drivers/null/ui_null_msg_window.c"
+//#include "../ui/drivers/null/ui_null_application.c"
+//
+//#if defined(_WIN32) && !defined(_XBOX)
+//oo
+//#include "../ui/drivers/ui_win32.c"
+//#include "../ui/drivers/win32/ui_win32_browser_window.c"
+//#include "../ui/drivers/win32/ui_win32_msg_window.c"
+//#include "../ui/drivers/win32/ui_win32_application.c"
+//#endif
 
 /*============================================================
 MAIN
 ============================================================ */
-#include "../frontend/frontend.c"
+//#include "../frontend/frontend.c"
 
 /*============================================================
 GIT
 ============================================================ */
 
-#ifdef HAVE_GIT_VERSION
-oo
-#include "../version_git.c"
-#endif
+//#ifdef HAVE_GIT_VERSION
+//oo
+//#include "../version_git.c"
+//#endif
 
 
 ///*============================================================
