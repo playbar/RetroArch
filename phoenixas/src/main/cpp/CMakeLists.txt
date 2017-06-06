@@ -37,6 +37,90 @@ add_library(retroarch-activity SHARED
             ${LIBRETRO_COMM_DIR}/audio/resampler/drivers/sinc_resampler_neon.S
             ${RARCH_DIR}/audio/drivers_resampler/cc_resampler_neon.S
                 ${RARCH_DIR}/griffin/griffin1.c
+                ${RARCH_DIR}/tasks/task_autodetect.c
+                ${RARCH_DIR}/tasks/task_audio_mixer.c
+                ${RARCH_DIR}/input/input_joypad_driver.c
+                ${RARCH_DIR}/input/input_config.c
+                ${RARCH_DIR}/input/input_keymaps.c
+                ${RARCH_DIR}/input/input_remapping.c
+                ${RARCH_DIR}/input/input_keyboard.c
+                ${RARCH_DIR}/input/input_overlay.c
+                ${RARCH_DIR}/tasks/task_overlay.c
+                ${RARCH_DIR}/input/input_autodetect_builtin.c
+                ${RARCH_DIR}/input/drivers/android_input.c
+                ${RARCH_DIR}/input/drivers_keyboard/keyboard_event_android.c
+                ${RARCH_DIR}/input/drivers_joypad/android_joypad.c
+                ${RARCH_DIR}/input/drivers/nullinput.c
+                ${RARCH_DIR}/input/drivers_joypad/null_joypad.c
+                ${RARCH_DIR}/gfx/video_state_tracker.c
+                ${RARCH_DIR}/libretro-common/queues/fifo_queue.c
+                ${RARCH_DIR}/libretro-common/audio/resampler/audio_resampler.c
+                ${RARCH_DIR}/libretro-common/audio/resampler/drivers/sinc_resampler.c
+                ${RARCH_DIR}/libretro-common/audio/resampler/drivers/nearest_resampler.c
+                ${RARCH_DIR}/libretro-common/audio/resampler/drivers/null_resampler.c
+                ${RARCH_DIR}/audio/drivers_resampler/cc_resampler.c
+                ${RARCH_DIR}/camera/drivers/android.c
+                ${RARCH_DIR}/camera/drivers/nullcamera.c
+                ${RARCH_DIR}/location/drivers/android.c
+                ${RARCH_DIR}/location/drivers/nulllocation.c
+                ${RARCH_DIR}/audio/librsound.c
+                ${RARCH_DIR}/audio/drivers/rsound.c
+                ${RARCH_DIR}/audio/drivers/opensl.c
+                ${RARCH_DIR}/audio/drivers/nullaudio.c
+                ${RARCH_DIR}/gfx/video_driver.c
+                ${RARCH_DIR}/gfx/video_coord_array.c
+                ${RARCH_DIR}/input/input_driver.c
+                ${RARCH_DIR}/audio/audio_driver.c
+                ${RARCH_DIR}/libretro-common/audio/audio_mixer.c
+                ${RARCH_DIR}/camera/camera_driver.c
+                ${RARCH_DIR}/location/location_driver.c
+                ${RARCH_DIR}/driver.c
+                ${RARCH_DIR}/libretro-common/gfx/scaler/scaler_filter.c
+                ${RARCH_DIR}/libretro-common/gfx/scaler/pixconv.c
+                ${RARCH_DIR}/libretro-common/gfx/scaler/scaler.c
+                ${RARCH_DIR}/libretro-common/gfx/scaler/scaler_int.c
+                ${RARCH_DIR}/gfx/video_filters/2xsai.c
+                ${RARCH_DIR}/gfx/video_filters/super2xsai.c
+                ${RARCH_DIR}/gfx/video_filters/supereagle.c
+                ${RARCH_DIR}/gfx/video_filters/2xbr.c
+                ${RARCH_DIR}/gfx/video_filters/darken.c
+                ${RARCH_DIR}/gfx/video_filters/epx.c
+                ${RARCH_DIR}/gfx/video_filters/scale2x.c
+                ${RARCH_DIR}/gfx/video_filters/blargg_ntsc_snes.c
+                ${RARCH_DIR}/gfx/video_filters/lq2x.c
+                ${RARCH_DIR}/gfx/video_filters/phosphor2x.c
+                ${RARCH_DIR}/libretro-common/audio/dsp_filters/echo.c
+                ${RARCH_DIR}/libretro-common/audio/dsp_filters/eq.c
+                ${RARCH_DIR}/libretro-common/audio/dsp_filters/chorus.c
+                ${RARCH_DIR}/libretro-common/audio/dsp_filters/iir.c
+                ${RARCH_DIR}/libretro-common/audio/dsp_filters/panning.c
+                ${RARCH_DIR}/libretro-common/audio/dsp_filters/phaser.c
+                ${RARCH_DIR}/libretro-common/audio/dsp_filters/reverb.c
+                ${RARCH_DIR}/libretro-common/audio/dsp_filters/wahwah.c
+                ${RARCH_DIR}/libretro-common/dynamic/dylib.c
+                ${RARCH_DIR}/dynamic.c
+                ${RARCH_DIR}/gfx/video_filter.c
+                ${RARCH_DIR}/libretro-common/audio/dsp_filter.c
+                ${RARCH_DIR}/cores/dynamic_dummy.c
+                ${RARCH_DIR}/libretro-common/file/file_path.c
+                ${RARCH_DIR}/file_path_special.c
+                ${RARCH_DIR}/file_path_str.c
+                ${RARCH_DIR}/libretro-common/lists/dir_list.c
+                ${RARCH_DIR}/libretro-common/lists/string_list.c
+                ${RARCH_DIR}/libretro-common/lists/file_list.c
+                ${RARCH_DIR}/setting_list.c
+                ${RARCH_DIR}/libretro-common/file/retro_dirent.c
+                ${RARCH_DIR}/libretro-common/streams/file_stream.c
+                ${RARCH_DIR}/libretro-common/streams/interface_stream.c
+                ${RARCH_DIR}/libretro-common/streams/memory_stream.c
+                ${RARCH_DIR}/libretro-common/file/retro_stat.c
+                ${RARCH_DIR}/list_special.c
+                ${RARCH_DIR}/libretro-common/string/stdstring.c
+                ${RARCH_DIR}/libretro-common/file/nbio/nbio_stdio.c
+                ${RARCH_DIR}/libretro-common/queues/message_queue.c
+                ${RARCH_DIR}/configuration.c
+                ${RARCH_DIR}/managers/state_manager.c
+                ${RARCH_DIR}/frontend/frontend_driver.c
                 ${RARCH_DIR}/frontend/drivers/platform_linux.c
                 ${RARCH_DIR}/frontend/drivers/platform_null.c
                 ${RARCH_DIR}/core_info.c
@@ -240,9 +324,12 @@ add_library(retroarch-activity SHARED
 
 target_include_directories(retroarch-activity PRIVATE
                            ${CMAKE_SOURCE_DIR}/
+                           ${RARCH_DIR}/
                            ${RARCH_DIR}/libretro-common/include/
                            ${RARCH_DIR}/gfx/include/
                            ${RARCH_DIR}/deps/
+                           ${RARCH_DIR}/frontend/
+                           ${RARCH_DIR}/input/
                            ${DEPS_DIR}/glslang/
                            ${DEPS_DIR}/glslang/glslang/glslang/Public/
                            ${DEPS_DIR}/glslang/glslang/glslang/MachineIndependent/
