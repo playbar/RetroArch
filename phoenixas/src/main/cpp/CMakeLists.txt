@@ -36,7 +36,44 @@ add_library(retroarch-activity SHARED
             ${LIBRETRO_COMM_DIR}/audio/conversion/float_to_s16_neon.S
             ${LIBRETRO_COMM_DIR}/audio/resampler/drivers/sinc_resampler_neon.S
             ${RARCH_DIR}/audio/drivers_resampler/cc_resampler_neon.S
-            ${RARCH_DIR}/griffin/griffin1.c
+                ${RARCH_DIR}/griffin/griffin1.c
+                ${RARCH_DIR}/libretro-common/net/net_http_parse.c
+                ${RARCH_DIR}/deps/7zip/7zIn.c
+                ${RARCH_DIR}/deps/7zip/7zAlloc.c
+                ${RARCH_DIR}/deps/7zip/Bra86.c
+                ${RARCH_DIR}/deps/7zip/7zFile.c
+                ${RARCH_DIR}/deps/7zip/7zStream.c
+                ${RARCH_DIR}/deps/7zip/7zBuf2.c
+                ${RARCH_DIR}/deps/7zip/LzmaDec.c
+                ${RARCH_DIR}/deps/7zip/7zCrcOpt.c
+                ${RARCH_DIR}/deps/7zip/Bra.c
+                ${RARCH_DIR}/deps/7zip/7zDec.c
+                ${RARCH_DIR}/deps/7zip/Bcj2.c
+                ${RARCH_DIR}/deps/7zip/7zCrc.c
+                ${RARCH_DIR}/deps/7zip/Lzma2Dec.c
+                ${RARCH_DIR}/deps/7zip/7zBuf.c
+                ${RARCH_DIR}/libretro-common/audio/conversion/s16_to_float.c
+                ${RARCH_DIR}/libretro-common/audio/conversion/float_to_s16.c
+                ${RARCH_DIR}/libretro-common/audio/audio_mix.c
+                ${RARCH_DIR}/libretro-db/bintree.c
+                ${RARCH_DIR}/libretro-db/libretrodb.c
+                ${RARCH_DIR}/libretro-db/rmsgpack.c
+                ${RARCH_DIR}/libretro-db/rmsgpack_dom.c
+                ${RARCH_DIR}/libretro-db/query.c
+                ${RARCH_DIR}/database_info.c
+                ${RARCH_DIR}/deps/miniupnpc/igd_desc_parse.c
+                ${RARCH_DIR}/deps/miniupnpc/upnpreplyparse.c
+                ${RARCH_DIR}/deps/miniupnpc/upnpcommands.c
+                ${RARCH_DIR}/deps/miniupnpc/upnperrors.c
+                ${RARCH_DIR}/deps/miniupnpc/connecthostport.c
+                ${RARCH_DIR}/deps/miniupnpc/portlistingparse.c
+                ${RARCH_DIR}/deps/miniupnpc/receivedata.c
+                ${RARCH_DIR}/deps/miniupnpc/upnpdev.c
+                ${RARCH_DIR}/deps/miniupnpc/minissdpc.c
+                ${RARCH_DIR}/deps/miniupnpc/miniwget.c
+                ${RARCH_DIR}/deps/miniupnpc/miniupnpc.c
+                ${RARCH_DIR}/deps/miniupnpc/minixml.c
+                ${RARCH_DIR}/deps/miniupnpc/minisoap.c
             ${RARCH_DIR}/griffin/griffin_cpp.cpp
             ${DEPS_DIR}/glslang/glslang.cpp
             ${DEPS_DIR}/glslang/glslang/SPIRV/SpvBuilder.cpp
