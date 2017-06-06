@@ -828,51 +828,21 @@ GIT
 /*============================================================
 RETROARCH
 ============================================================ */
-#include "../core_impl.c"
-#include "../retroarch.c"
-#include "../dirs.c"
-#include "../paths.c"
-#include "../libretro-common/queues/task_queue.c"
 
-#include "../msg_hash.c"
-#ifdef HAVE_LANGEXTRA
-#include "../intl/msg_hash_de.c"
-#include "../intl/msg_hash_es.c"
-#include "../intl/msg_hash_eo.c"
-#include "../intl/msg_hash_fr.c"
-#include "../intl/msg_hash_it.c"
-#include "../intl/msg_hash_ja.c"
-#include "../intl/msg_hash_ko.c"
-#include "../intl/msg_hash_nl.c"
-#include "../intl/msg_hash_pt_br.c"
-#include "../intl/msg_hash_pt_pt.c"
-#include "../intl/msg_hash_pl.c"
-#include "../intl/msg_hash_ru.c"
-#include "../intl/msg_hash_vn.c"
-#include "../intl/msg_hash_chs.c"
-#endif
 
-#include "../intl/msg_hash_us.c"
 
-/*============================================================
-WIFI
-============================================================ */
-//#include "../wifi/wifi_driver.c"
-//#include "../wifi/drivers/nullwifi.c"
+//#include "../intl/msg_hash_de.c"
+//#include "../intl/msg_hash_es.c"
+//#include "../intl/msg_hash_eo.c"
+//#include "../intl/msg_hash_fr.c"
+//#include "../intl/msg_hash_it.c"
+//#include "../intl/msg_hash_ja.c"
+//#include "../intl/msg_hash_ko.c"
+//#include "../intl/msg_hash_nl.c"
+//#include "../intl/msg_hash_pt_br.c"
 
-#ifdef HAVE_LAKKA
-oo
-#include "../wifi/drivers/connmanctl.c"
-#endif
 
-/*============================================================
-RECORDING
-============================================================ */
-//#include "../movie.c"
-//#include "../record/record_driver.c"
-//#include "../record/drivers/record_null.c"
 
-#ifdef HAVE_FFMPEG
-oo
-#include "../record/drivers/record_ffmpeg.c"
-#endif
+
+
+
