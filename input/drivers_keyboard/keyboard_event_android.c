@@ -14,6 +14,7 @@
  */
 
 #include <retro_miscellaneous.h>
+#include <input/input_keymaps.h>
 
 #include "keyboard_event_android.h"
 #include "input_defines.h"

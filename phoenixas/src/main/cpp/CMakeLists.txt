@@ -100,7 +100,6 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/gfx/drivers_font/vulkan_raster_font.c
                 ${RARCH_DIR}/tasks/task_autodetect.c
                 ${RARCH_DIR}/tasks/task_audio_mixer.c
-                ${RARCH_DIR}/input/input_joypad_driver.c
                 ${RARCH_DIR}/input/input_config.c
                 ${RARCH_DIR}/input/input_keymaps.c
                 ${RARCH_DIR}/input/input_remapping.c
