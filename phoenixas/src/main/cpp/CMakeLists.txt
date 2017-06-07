@@ -36,7 +36,39 @@ add_library(retroarch-activity SHARED
             ${LIBRETRO_COMM_DIR}/audio/conversion/float_to_s16_neon.S
             ${LIBRETRO_COMM_DIR}/audio/resampler/drivers/sinc_resampler_neon.S
             ${RARCH_DIR}/audio/drivers_resampler/cc_resampler_neon.S
-                ${RARCH_DIR}/griffin/griffin1.c
+                ${RARCH_DIR}/verbosity.c
+                ${RARCH_DIR}/libretro-common/file/archive_file.c
+                ${RARCH_DIR}/libretro-common/file/archive_file_zlib.c
+                ${RARCH_DIR}/libretro-common/file/archive_file_7z.c
+                ${RARCH_DIR}/libretro-common/streams/stdin_stream.c
+                ${RARCH_DIR}/libretro-common/streams/trans_stream.c
+                ${RARCH_DIR}/libretro-common/streams/trans_stream_pipe.c
+                ${RARCH_DIR}/libretro-common/streams/trans_stream_zlib.c
+                ${RARCH_DIR}/libretro-common/encodings/encoding_utf.c
+                ${RARCH_DIR}/libretro-common/encodings/encoding_crc32.c
+                ${RARCH_DIR}/libretro-common/features/features_cpu.c
+                ${RARCH_DIR}/performance_counters.c
+                ${LIBRETRO_COMM_DIR}/compat/compat_getopt.c
+                ${LIBRETRO_COMM_DIR}/compat/compat_strcasestr.c
+                ${LIBRETRO_COMM_DIR}/compat/compat_strl.c
+                ${LIBRETRO_COMM_DIR}/compat/compat_ifaddrs.c
+                ${RARCH_DIR}/libretro-common/compat/compat_fnmatch.c
+                ${RARCH_DIR}/libretro-common/memmap/memalign.c
+                ${RARCH_DIR}/libretro-common/file/config_file.c
+                ${RARCH_DIR}/libretro-common/file/config_file_userdata.c
+                ${RARCH_DIR}/managers/core_manager.c
+                ${RARCH_DIR}/managers/core_option_manager.c
+                ${RARCH_DIR}/libretro-common/formats/json/jsonsax.c
+                ${RARCH_DIR}/network/net_http_special.c
+                ${RARCH_DIR}/cheevos/cheevos.c
+                ${RARCH_DIR}/libretro-common/utils/md5.c
+                ${RARCH_DIR}/managers/cheat_manager.c
+                ${RARCH_DIR}/libretro-common/hash/rhash.c
+                ${RARCH_DIR}/gfx/drivers_context/gfx_null_ctx.c
+                ${RARCH_DIR}/gfx/drivers_context/android_ctx.c
+                ${RARCH_DIR}/gfx/common/vulkan_common.c
+                ${RARCH_DIR}/libretro-common/vulkan/vulkan_symbol_wrapper.c
+                ${RARCH_DIR}/gfx/common/egl_common.c
                 ${RARCH_DIR}/gfx/video_shader_parse.c
                 ${RARCH_DIR}/gfx/drivers_shader/shader_null.c
                 ${RARCH_DIR}/gfx/drivers_shader/shader_glsl.c
