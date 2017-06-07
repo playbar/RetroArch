@@ -278,50 +278,47 @@ int detect_psp_game(const char *track_path, char *game_id)
       {
          game_id[5] = '\0';
 
-         if (!string_is_empty(game_id))
-         {
-            if (
-                     (string_is_equal_fast(game_id, "ULES-", 5))
-                  || (string_is_equal_fast(game_id, "ULUS-", 5))
-                  || (string_is_equal_fast(game_id, "ULJS-", 5))
+         if (
+               (string_is_equal(game_id, "ULES-"))
+               || (string_is_equal(game_id, "ULUS-"))
+               || (string_is_equal(game_id, "ULJS-"))
 
-                  || (string_is_equal_fast(game_id, "ULEM-", 5))
-                  || (string_is_equal_fast(game_id, "ULUM-", 5))
-                  || (string_is_equal_fast(game_id, "ULJM-", 5))
+               || (string_is_equal(game_id, "ULEM-"))
+               || (string_is_equal(game_id, "ULUM-"))
+               || (string_is_equal(game_id, "ULJM-"))
 
-                  || (string_is_equal_fast(game_id, "UCES-", 5))
-                  || (string_is_equal_fast(game_id, "UCUS-", 5))
-                  || (string_is_equal_fast(game_id, "UCJS-", 5))
-                  || (string_is_equal_fast(game_id, "UCAS-", 5))
+               || (string_is_equal(game_id, "UCES-"))
+               || (string_is_equal(game_id, "UCUS-"))
+               || (string_is_equal(game_id, "UCJS-"))
+               || (string_is_equal(game_id, "UCAS-"))
 
-                  || (string_is_equal_fast(game_id, "NPEH-", 5))
-                  || (string_is_equal_fast(game_id, "NPUH-", 5))
-                  || (string_is_equal_fast(game_id, "NPJH-", 5))
+               || (string_is_equal(game_id, "NPEH-"))
+               || (string_is_equal(game_id, "NPUH-"))
+               || (string_is_equal(game_id, "NPJH-"))
 
-                  || (string_is_equal_fast(game_id, "NPEG-", 5))
-                  || (string_is_equal_fast(game_id, "NPUG-", 5))
-                  || (string_is_equal_fast(game_id, "NPJG-", 5))
-                  || (string_is_equal_fast(game_id, "NPHG-", 5))
+               || (string_is_equal(game_id, "NPEG-"))
+               || (string_is_equal(game_id, "NPUG-"))
+               || (string_is_equal(game_id, "NPJG-"))
+               || (string_is_equal(game_id, "NPHG-"))
 
-                  || (string_is_equal_fast(game_id, "NPEZ-", 5))
-                  || (string_is_equal_fast(game_id, "NPUZ-", 5))
-                  || (string_is_equal_fast(game_id, "NPJZ-", 5))
-                  )
+               || (string_is_equal(game_id, "NPEZ-"))
+               || (string_is_equal(game_id, "NPUZ-"))
+               || (string_is_equal(game_id, "NPJZ-"))
+               )
+               {
+                  filestream_seek(fd, pos, SEEK_SET);
+                  if (filestream_read(fd, game_id, 10) > 0)
                   {
-                     filestream_seek(fd, pos, SEEK_SET);
-                     if (filestream_read(fd, game_id, 10) > 0)
-                     {
 #if 0
-                        game_id[4] = '-';
-                        game_id[8] = game_id[9];
-                        game_id[9] = game_id[10];
+                     game_id[4] = '-';
+                     game_id[8] = game_id[9];
+                     game_id[9] = game_id[10];
 #endif
-                        game_id[10] = '\0';
-                        rv = true;
-                     }
-                     break;
+                     game_id[10] = '\0';
+                     rv = true;
                   }
-         }
+                  break;
+               }
       }
       else
          break;
@@ -374,7 +371,7 @@ int detect_system(const char *track_path, const char **system_name)
    {
       magic[8] = '\0';
       if (!string_is_empty(magic) &&
-            string_is_equal_fast(magic, "PSP GAME", 8))
+            string_is_equal(magic, "PSP GAME"))
       {
          *system_name = "psp\0";
          rv = 0;
@@ -411,49 +408,46 @@ int find_first_data_track(const char *cue_path,
 
    while (get_token(fd, tmp_token, MAX_TOKEN_LEN) > 0)
    {
-      if (!string_is_empty(tmp_token))
+      if (string_is_equal(tmp_token, "FILE"))
       {
-         if (string_is_equal_fast(tmp_token, "FILE", 4))
+         char cue_dir[PATH_MAX_LENGTH];
+
+         cue_dir[0] = '\0';
+
+         fill_pathname_basedir(cue_dir, cue_path, sizeof(cue_dir));
+
+         get_token(fd, tmp_token, MAX_TOKEN_LEN);
+         fill_pathname_join(track_path, cue_dir, tmp_token, max_len);
+
+      }
+      else if (string_is_equal(tmp_token, "TRACK"))
+      {
+         int m, s, f;
+         get_token(fd, tmp_token, MAX_TOKEN_LEN);
+         get_token(fd, tmp_token, MAX_TOKEN_LEN);
+
+         if (string_is_equal(tmp_token, "AUDIO"))
+            continue;
+
+         find_token(fd, "INDEX");
+         get_token(fd, tmp_token, MAX_TOKEN_LEN);
+         get_token(fd, tmp_token, MAX_TOKEN_LEN);
+
+         if (sscanf(tmp_token, "%02d:%02d:%02d", &m, &s, &f) < 3)
          {
-            char cue_dir[PATH_MAX_LENGTH];
-
-            cue_dir[0] = '\0';
-
-            fill_pathname_basedir(cue_dir, cue_path, sizeof(cue_dir));
-
-            get_token(fd, tmp_token, MAX_TOKEN_LEN);
-            fill_pathname_join(track_path, cue_dir, tmp_token, max_len);
-
+            RARCH_LOG("Error parsing time stamp '%s'\n", tmp_token);
+            filestream_close(fd);
+            return -errno;
          }
-         else if (string_is_equal_fast(tmp_token, "TRACK", 5))
-         {
-            int m, s, f;
-            get_token(fd, tmp_token, MAX_TOKEN_LEN);
-            get_token(fd, tmp_token, MAX_TOKEN_LEN);
 
-            if (string_is_equal_fast(tmp_token, "AUDIO", 5))
-               continue;
+         *offset = ((m * 60) * (s * 75) * f) * 25;
 
-            find_token(fd, "INDEX");
-            get_token(fd, tmp_token, MAX_TOKEN_LEN);
-            get_token(fd, tmp_token, MAX_TOKEN_LEN);
+         RARCH_LOG("%s '%s+%d'\n",
+               msg_hash_to_str(MSG_FOUND_FIRST_DATA_TRACK_ON_FILE),
+               track_path, *offset);
 
-            if (sscanf(tmp_token, "%02d:%02d:%02d", &m, &s, &f) < 3)
-            {
-               RARCH_LOG("Error parsing time stamp '%s'\n", tmp_token);
-               filestream_close(fd);
-               return -errno;
-            }
-
-            *offset = ((m * 60) * (s * 75) * f) * 25;
-
-            RARCH_LOG("%s '%s+%d'\n",
-                  msg_hash_to_str(MSG_FOUND_FIRST_DATA_TRACK_ON_FILE),
-                  track_path, *offset);
-
-            rv = 0;
-            goto clean;
-         }
+         rv = 0;
+         goto clean;
       }
    }
 

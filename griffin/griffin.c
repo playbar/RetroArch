@@ -416,7 +416,6 @@ INPUT
 ============================================================ */
 #include "../tasks/task_autodetect.c"
 #include "../tasks/task_audio_mixer.c"
-#include "../input/input_joypad_driver.c"
 #include "../input/input_config.c"
 #include "../input/input_keymaps.c"
 #include "../input/input_remapping.c"
@@ -469,6 +468,10 @@ INPUT
 #elif defined(DJGPP)
 #include "../input/drivers/dos_input.c"
 #include "../input/drivers_joypad/dos_joypad.c"
+#endif
+
+#ifdef HAVE_WAYLAND
+#include "../input/drivers/wayland_input.c"
 #endif
 
 #ifdef HAVE_DINPUT
