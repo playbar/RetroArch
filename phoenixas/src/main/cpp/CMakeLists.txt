@@ -36,7 +36,7 @@ add_library(retroarch-activity SHARED
             ${LIBRETRO_COMM_DIR}/audio/conversion/float_to_s16_neon.S
             ${LIBRETRO_COMM_DIR}/audio/resampler/drivers/sinc_resampler_neon.S
             ${RARCH_DIR}/audio/drivers_resampler/cc_resampler_neon.S
-                ${RARCH_DIR}/verbosity.c
+                ${RARCH_DIR}/src/verbosity.c
                 ${RARCH_DIR}/libretro-common/file/archive_file.c
                 ${RARCH_DIR}/libretro-common/file/archive_file_zlib.c
                 ${RARCH_DIR}/libretro-common/file/archive_file_7z.c
@@ -47,7 +47,7 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/libretro-common/encodings/encoding_utf.c
                 ${RARCH_DIR}/libretro-common/encodings/encoding_crc32.c
                 ${RARCH_DIR}/libretro-common/features/features_cpu.c
-                ${RARCH_DIR}/performance_counters.c
+                ${RARCH_DIR}/src/performance_counters.c
                 ${LIBRETRO_COMM_DIR}/compat/compat_getopt.c
                 ${LIBRETRO_COMM_DIR}/compat/compat_strcasestr.c
                 ${LIBRETRO_COMM_DIR}/compat/compat_strl.c
@@ -135,7 +135,7 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/libretro-common/audio/audio_mixer.c
                 ${RARCH_DIR}/camera/camera_driver.c
                 ${RARCH_DIR}/location/location_driver.c
-                ${RARCH_DIR}/driver.c
+                ${RARCH_DIR}/src/driver.c
                 ${RARCH_DIR}/libretro-common/gfx/scaler/scaler_filter.c
                 ${RARCH_DIR}/libretro-common/gfx/scaler/pixconv.c
                 ${RARCH_DIR}/libretro-common/gfx/scaler/scaler.c
@@ -159,32 +159,32 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/libretro-common/audio/dsp_filters/reverb.c
                 ${RARCH_DIR}/libretro-common/audio/dsp_filters/wahwah.c
                 ${RARCH_DIR}/libretro-common/dynamic/dylib.c
-                ${RARCH_DIR}/dynamic.c
+                ${RARCH_DIR}/src/dynamic.c
                 ${RARCH_DIR}/gfx/video_filter.c
                 ${RARCH_DIR}/libretro-common/audio/dsp_filter.c
                 ${RARCH_DIR}/cores/dynamic_dummy.c
                 ${RARCH_DIR}/libretro-common/file/file_path.c
-                ${RARCH_DIR}/file_path_special.c
-                ${RARCH_DIR}/file_path_str.c
+                ${RARCH_DIR}/src/file_path_special.c
+                ${RARCH_DIR}/src/file_path_str.c
                 ${RARCH_DIR}/libretro-common/lists/dir_list.c
                 ${RARCH_DIR}/libretro-common/lists/string_list.c
                 ${RARCH_DIR}/libretro-common/lists/file_list.c
-                ${RARCH_DIR}/setting_list.c
+                ${RARCH_DIR}/src/setting_list.c
                 ${RARCH_DIR}/libretro-common/file/retro_dirent.c
                 ${RARCH_DIR}/libretro-common/streams/file_stream.c
                 ${RARCH_DIR}/libretro-common/streams/interface_stream.c
                 ${RARCH_DIR}/libretro-common/streams/memory_stream.c
                 ${RARCH_DIR}/libretro-common/file/retro_stat.c
-                ${RARCH_DIR}/list_special.c
+                ${RARCH_DIR}/src/list_special.c
                 ${RARCH_DIR}/libretro-common/string/stdstring.c
                 ${RARCH_DIR}/libretro-common/file/nbio/nbio_stdio.c
                 ${RARCH_DIR}/libretro-common/queues/message_queue.c
-                ${RARCH_DIR}/configuration.c
+                ${RARCH_DIR}/src/configuration.c
                 ${RARCH_DIR}/managers/state_manager.c
                 ${RARCH_DIR}/frontend/frontend_driver.c
                 ${RARCH_DIR}/frontend/drivers/platform_linux.c
                 ${RARCH_DIR}/frontend/drivers/platform_null.c
-                ${RARCH_DIR}/core_info.c
+                ${RARCH_DIR}/src/core_info.c
                 ${RARCH_DIR}/ui/ui_companion_driver.c
                 ${RARCH_DIR}/ui/drivers/ui_null.c
                 ${RARCH_DIR}/ui/drivers/null/ui_null_window.c
@@ -192,12 +192,12 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/ui/drivers/null/ui_null_msg_window.c
                 ${RARCH_DIR}/ui/drivers/null/ui_null_application.c
                 ${RARCH_DIR}/frontend/frontend.c
-                ${RARCH_DIR}/core_impl.c
-                ${RARCH_DIR}/retroarch.c
-                ${RARCH_DIR}/dirs.c
-                ${RARCH_DIR}/paths.c
+                ${RARCH_DIR}/src/core_impl.c
+                ${RARCH_DIR}/src/retroarch.c
+                ${RARCH_DIR}/src/dirs.c
+                ${RARCH_DIR}/src/paths.c
                 ${RARCH_DIR}/libretro-common/queues/task_queue.c
-                ${RARCH_DIR}/msg_hash.c
+                ${RARCH_DIR}/src/msg_hash.c
                 ${RARCH_DIR}/intl/msg_hash_de.c
                 ${RARCH_DIR}/intl/msg_hash_es.c
                 ${RARCH_DIR}/intl/msg_hash_eo.c
@@ -215,7 +215,7 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/intl/msg_hash_us.c
                 ${RARCH_DIR}/wifi/wifi_driver.c
                 ${RARCH_DIR}/wifi/drivers/nullwifi.c
-                ${RARCH_DIR}/movie.c
+                ${RARCH_DIR}/src/movie.c
                 ${RARCH_DIR}/record/record_driver.c
                 ${RARCH_DIR}/record/drivers/record_null.c
                 ${RARCH_DIR}/libretro-common/rthreads/rthreads.c
@@ -250,7 +250,7 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/tasks/task_database.c
                 ${RARCH_DIR}/tasks/task_database_cue.c
                 ${RARCH_DIR}/tasks/task_screenshot.c
-                ${RARCH_DIR}/playlist.c
+                ${RARCH_DIR}/src/playlist.c
                 ${RARCH_DIR}/menu/menu_driver.c
                 ${RARCH_DIR}/menu/menu_input.c
                 ${RARCH_DIR}/menu/menu_event.c
@@ -295,7 +295,7 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/menu/drivers/materialui.c
                 ${RARCH_DIR}/input/input_remote.c
                 ${RARCH_DIR}/cores/libretro-net-retropad/net_retropad_core.c
-                ${RARCH_DIR}/command.c
+                ${RARCH_DIR}/src/command.c
                 ${RARCH_DIR}/libretro-common/net/net_http_parse.c
                 ${RARCH_DIR}/deps/7zip/7zIn.c
                 ${RARCH_DIR}/deps/7zip/7zAlloc.c
@@ -319,7 +319,7 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/libretro-db/rmsgpack.c
                 ${RARCH_DIR}/libretro-db/rmsgpack_dom.c
                 ${RARCH_DIR}/libretro-db/query.c
-                ${RARCH_DIR}/database_info.c
+                ${RARCH_DIR}/src/database_info.c
                 ${RARCH_DIR}/deps/miniupnpc/igd_desc_parse.c
                 ${RARCH_DIR}/deps/miniupnpc/upnpreplyparse.c
                 ${RARCH_DIR}/deps/miniupnpc/upnpcommands.c
@@ -386,6 +386,7 @@ add_library(retroarch-activity SHARED
 target_include_directories(retroarch-activity PRIVATE
                            ${CMAKE_SOURCE_DIR}/
                            ${RARCH_DIR}/
+                           ${RARCH_DIR}/src
                            ${RARCH_DIR}/libretro-common/include/
                            ${RARCH_DIR}/gfx/include/
                            ${RARCH_DIR}/deps/

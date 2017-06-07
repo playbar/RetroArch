@@ -29,8 +29,8 @@
 #include "input_driver.h"
 #include "input_keymaps.h"
 
-#include "../list_special.h"
-#include "../verbosity.h"
+#include "../src/list_special.h"
+#include "../src/verbosity.h"
 
 static input_device_driver_t *joypad_drivers[] = {
 #ifdef __CELLOS_LV2__
@@ -136,7 +136,7 @@ const char* config_get_joypad_driver_options(void)
  *
  * Initialize a joypad driver of name @ident.
  *
- * If ident points to NULL or a zero-length string, 
+ * If ident points to NULL or a zero-length string,
  * equivalent to calling input_joypad_init_first().
  *
  * Returns: joypad driver if found, otherwise NULL.
@@ -187,7 +187,7 @@ const input_device_driver_t *input_joypad_init_first(void *data)
 }
 
 /**
- * input_joypad_name:  
+ * input_joypad_name:
  * @drv                     : Input device driver handle.
  * @port                    : Joystick number.
  *
@@ -221,7 +221,7 @@ bool input_joypad_set_rumble(const input_device_driver_t *drv,
 
    if (!input_config_get_bind_idx(port, &joy_idx))
       return false;
-   
+
    if (!drv || !drv->set_rumble)
       return false;
 
@@ -255,7 +255,7 @@ bool input_joypad_pressed(
 
    if ((uint16_t)joykey == NO_BTN || !drv->button(joypad_info.joy_idx, (uint16_t)joykey))
    {
-      uint32_t joyaxis     = (binds[key].joyaxis != AXIS_NONE) 
+      uint32_t joyaxis     = (binds[key].joyaxis != AXIS_NONE)
          ? binds[key].joyaxis : joypad_info.auto_binds[key].joyaxis;
       int16_t  axis        = drv->axis(joypad_info.joy_idx, joyaxis);
       float    scaled_axis = (float)abs(axis) / 0x8000;
@@ -270,7 +270,7 @@ bool input_joypad_pressed(
  * @drv                     : Input device driver handle.
  * @port                    : User number.
  * @idx                     : Analog key index.
- *                            E.g.: 
+ *                            E.g.:
  *                            - RETRO_DEVICE_INDEX_ANALOG_LEFT
  *                            - RETRO_DEVICE_INDEX_ANALOG_RIGHT
  * @ident                   : Analog key identifier.
@@ -341,12 +341,12 @@ int16_t input_joypad_analog(const input_device_driver_t *drv,
 }
 
 /**
- * input_joypad_axis_raw:  
+ * input_joypad_axis_raw:
  * @drv                     : Input device driver handle.
  * @port                    : Joystick number.
  * @axis                    : Identifier of axis.
  *
- * Checks if axis (@axis) was being pressed by user   
+ * Checks if axis (@axis) was being pressed by user
  * with joystick number @port.
  *
  * Returns: true (1) if axis was pressed, otherwise
@@ -392,7 +392,7 @@ bool input_joypad_hat_raw(const input_device_driver_t *drv,
 /**
  * input_conv_analog_id_to_bind_id:
  * @idx                     : Analog key index.
- *                            E.g.: 
+ *                            E.g.:
  *                            - RETRO_DEVICE_INDEX_ANALOG_LEFT
  *                            - RETRO_DEVICE_INDEX_ANALOG_RIGHT
  * @ident                   : Analog key identifier.

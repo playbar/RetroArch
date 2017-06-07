@@ -21,7 +21,7 @@
 #include <retro_miscellaneous.h>
 
 #include "../font_driver.h"
-#include "../../verbosity.h"
+#include "../../src/verbosity.h"
 
 #ifndef STB_TRUETYPE_IMPLEMENTATION
 #define STB_TRUETYPE_IMPLEMENTATION

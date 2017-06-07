@@ -20,8 +20,8 @@
 
 #include "input_config.h"
 #include "input_remapping.h"
-#include "../configuration.h"
-#include "../retroarch.h"
+#include "../src/configuration.h"
+#include "../src/retroarch.h"
 
 /**
  * input_remapping_load_file:

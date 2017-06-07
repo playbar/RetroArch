@@ -52,10 +52,10 @@
 
 #include "../menu_event.h"
 
-#include "../../verbosity.h"
-#include "../../configuration.h"
-#include "../../playlist.h"
-#include "../../retroarch.h"
+#include "../../src/verbosity.h"
+#include "../../src/configuration.h"
+#include "../../src/playlist.h"
+#include "../../src/retroarch.h"
 
 #include "../../tasks/tasks_internal.h"
 
@@ -610,7 +610,7 @@ static void xmb_draw_icon(
 static void xmb_draw_thumbnail(
       menu_display_frame_info_t menu_disp_info,
       xmb_handle_t *xmb, float *color,
-      unsigned width, unsigned height, 
+      unsigned width, unsigned height,
       float x, float y,
       float w, float h, uintptr_t texture)
 {
@@ -826,7 +826,7 @@ static void xmb_render_messagebox_internal(
    {
       const char *msg = list->elems[i].data;
       int len         = (int)utf8len(msg);
-       
+
       if (len > longest)
       {
          longest = len;

@@ -56,10 +56,10 @@
 
 #include "../frontend.h"
 #include "../frontend_driver.h"
-#include "../../defaults.h"
-#include "../../retroarch.h"
-#include "../../verbosity.h"
-#include "../../paths.h"
+#include "../../src/defaults.h"
+#include "../../src/retroarch.h"
+#include "../../src/verbosity.h"
+#include "../../src/paths.h"
 #include "platform_linux.h"
 
 #ifdef HAVE_MENU

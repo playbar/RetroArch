@@ -27,16 +27,16 @@
 #endif
 
 #include "frontend.h"
-#include "../configuration.h"
+#include "../src/configuration.h"
 #include "../ui/ui_companion_driver.h"
 #include "../tasks/tasks_internal.h"
 
-#include "../driver.h"
-#include "../paths.h"
-#include "../retroarch.h"
+#include "../src/driver.h"
+#include "../src/paths.h"
+#include "../src/retroarch.h"
 
 #ifndef HAVE_MAIN
-#include "../retroarch.h"
+#include "../src/retroarch.h"
 #endif
 
 /**
@@ -100,7 +100,7 @@ int rarch_main(int argc, char *argv[], void *data)
    rarch_ctl(RARCH_CTL_PREINIT, NULL);
    frontend_driver_init_first(args);
    rarch_ctl(RARCH_CTL_INIT, NULL);
-   
+
    if (frontend_driver_is_inited())
    {
       content_ctx_info_t info;

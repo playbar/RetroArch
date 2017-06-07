@@ -22,7 +22,7 @@
 #include <string/stdstring.h>
 
 #include "tasks_internal.h"
-#include "../verbosity.h"
+#include "../src/verbosity.h"
 
 bool task_image_load_handler(retro_task_t *task);
 

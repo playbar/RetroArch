@@ -25,7 +25,7 @@
 
 #include "input_driver.h"
 
-#include "../retroarch.h"
+#include "../src/retroarch.h"
 
 struct input_keyboard_line
 {
@@ -33,8 +33,8 @@ struct input_keyboard_line
    size_t ptr;
    size_t size;
 
-   /** Line complete callback. 
-    * Calls back after return is 
+   /** Line complete callback.
+    * Calls back after return is
     * pressed with the completed line.
     * Line can be NULL.
     **/
@@ -151,7 +151,7 @@ static bool input_keyboard_line_event(
 {
    char c = character >= 128 ? '?' : character;
 
-   /* Treat extended chars as ? as we cannot support 
+   /* Treat extended chars as ? as we cannot support
     * printable characters for unicode stuff. */
 
    if (c == '\r' || c == '\n')
@@ -243,8 +243,8 @@ bool input_keyboard_line_append(const char *word)
  *
  * Sets function pointer for keyboard line handle.
  *
- * The underlying buffer can be reallocated at any time 
- * (or be NULL), but the pointer to it remains constant 
+ * The underlying buffer can be reallocated at any time
+ * (or be NULL), but the pointer to it remains constant
  * throughout the objects lifetime.
  *
  * Returns: underlying buffer of the keyboard line.

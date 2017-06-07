@@ -24,17 +24,17 @@
 
 #include "../menu_driver.h"
 #include "../menu_cbs.h"
-#include "../../msg_hash.h"
+#include "../../src/msg_hash.h"
 
-#include "../../database_info.h"
+#include "../../src/database_info.h"
 
 #include "../../cores/internal_cores.h"
 
-#include "../../configuration.h"
-#include "../../core.h"
-#include "../../core_info.h"
-#include "../../retroarch.h"
-#include "../../verbosity.h"
+#include "../../src/configuration.h"
+#include "../../src/core.h"
+#include "../../src/core_info.h"
+#include "../../src/retroarch.h"
+#include "../../src/verbosity.h"
 
 #ifndef BIND_ACTION_DEFERRED_PUSH
 #define BIND_ACTION_DEFERRED_PUSH(cbs, name) \
@@ -464,7 +464,7 @@ static int deferred_push_cursor_manager_list_generic(
 {
    int ret                       = -1;
    char query[PATH_MAX_LENGTH];
-   struct string_list *str_list  = string_split(info->path, "|"); 
+   struct string_list *str_list  = string_split(info->path, "|");
 
    query[0] = '\0';
 
@@ -588,7 +588,7 @@ static int deferred_push_cursor_manager_list_deferred_query_subsearch(
    int ret                       = -1;
 #ifdef HAVE_LIBRETRODB
    char query[PATH_MAX_LENGTH];
-   struct string_list *str_list  = string_split(info->path, "|"); 
+   struct string_list *str_list  = string_split(info->path, "|");
 
    query[0] = '\0';
 
@@ -888,7 +888,7 @@ static int deferred_push_content_history_path(menu_displaylist_info_t *info)
 }
 
 static int menu_cbs_init_bind_deferred_push_compare_label(
-      menu_file_list_cbs_t *cbs, 
+      menu_file_list_cbs_t *cbs,
       const char *label, uint32_t label_hash)
 {
    if (string_is_equal(label, msg_hash_to_str(MENU_ENUM_LABEL_DEFERRED_BROWSE_URL_LIST)))

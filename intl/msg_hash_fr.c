@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../msg_hash.h"
+#include "../src/msg_hash.h"
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Winvalid-source-encoding"

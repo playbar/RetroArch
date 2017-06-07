@@ -21,8 +21,8 @@
 #include <compat/strl.h>
 #include <string/stdstring.h>
 
-#include "../msg_hash.h"
-#include "../configuration.h"
+#include "../src/msg_hash.h"
+#include "../src/configuration.h"
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Winvalid-source-encoding"

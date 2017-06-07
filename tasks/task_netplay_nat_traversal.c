@@ -26,7 +26,7 @@
 #endif
 
 #include "../network/netplay/netplay.h"
-#include "../verbosity.h"
+#include "../src/verbosity.h"
 
 #ifdef HAVE_NETWORKING
 struct nat_traversal_state_data

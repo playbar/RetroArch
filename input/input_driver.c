@@ -1,7 +1,7 @@
 /*  RetroArch - A frontend for libretro.
  *  Copyright (C) 2010-2014 - Hans-Kristian Arntzen
  *  Copyright (C) 2011-2017 - Daniel De Matteis
- * 
+ *
  *  RetroArch is free software: you can redistribute it and/or modify it under the terms
  *  of the GNU General Public License as published by the Free Software Found-
  *  ation, either version 3 of the License, or (at your option) any later version.
@@ -35,14 +35,14 @@
 #include "../menu/widgets/menu_input_dialog.h"
 #endif
 
-#include "../configuration.h"
-#include "../driver.h"
-#include "../retroarch.h"
-#include "../movie.h"
-#include "../list_special.h"
-#include "../verbosity.h"
+#include "../src/configuration.h"
+#include "../src/driver.h"
+#include "../src/retroarch.h"
+#include "../src/movie.h"
+#include "../src/list_special.h"
+#include "../src/verbosity.h"
 #include "../tasks/tasks_internal.h"
-#include "../command.h"
+#include "../src/command.h"
 
 static const input_driver_t *input_drivers[] = {
 #ifdef __CELLOS_LV2__
@@ -229,7 +229,7 @@ void input_driver_set(const input_driver_t **input, void **input_data)
       *input      = current_input;
       *input_data = current_input_data;
    }
-   
+
    input_driver_set_own_driver();
 }
 
@@ -278,7 +278,7 @@ void input_poll(void)
    size_t i;
    settings_t *settings           = config_get_ptr();
    unsigned max_users             = input_driver_max_users;
-   
+
    current_input->poll(current_input_data);
 
    input_driver_turbo_btns.count++;
@@ -287,7 +287,7 @@ void input_poll(void)
    {
       input_driver_turbo_btns.frame_enable[i] = 0;
 
-      if (!input_driver_block_libretro_input && 
+      if (!input_driver_block_libretro_input &&
             libretro_input_binds[i][RARCH_TURBO_ENABLE].valid)
       {
          rarch_joypad_info_t joypad_info;
@@ -333,7 +333,7 @@ void input_poll(void)
  *
  * Input state callback function.
  *
- * Returns: Non-zero if the given key (identified by @id) 
+ * Returns: Non-zero if the given key (identified by @id)
  * was pressed by the user (assigned to @port).
  **/
 int16_t input_state(unsigned port, unsigned device,
@@ -352,7 +352,7 @@ int16_t input_state(unsigned port, unsigned device,
       bsv_movie_ctl(BSV_MOVIE_CTL_SET_END, NULL);
    }
 
-   if (     !input_driver_flushing_input 
+   if (     !input_driver_flushing_input
          && !input_driver_block_libretro_input)
    {
       settings_t *settings = config_get_ptr();
@@ -414,8 +414,8 @@ int16_t input_state(unsigned port, unsigned device,
           *
           * If turbo button is held, all buttons pressed except
           * for D-pad will go into a turbo mode. Until the button is
-          * released again, the input state will be modulated by a 
-          * periodic pulse defined by the configured duty cycle. 
+          * released again, the input state will be modulated by a
+          * periodic pulse defined by the configured duty cycle.
           */
          if (res && input_driver_turbo_btns.frame_enable[port])
             input_driver_turbo_btns.enable[port] |= (1 << id);
@@ -425,7 +425,7 @@ int16_t input_state(unsigned port, unsigned device,
          if (input_driver_turbo_btns.enable[port] & (1 << id))
          {
             /* if turbo button is enabled for this key ID */
-            res = res && ((input_driver_turbo_btns.count 
+            res = res && ((input_driver_turbo_btns.count
                      % settings->uints.input_turbo_period)
                   < settings->uints.input_turbo_duty_cycle);
          }
@@ -577,7 +577,7 @@ uint64_t input_menu_keys_pressed(void *data, uint64_t last_input)
    input_driver_block_libretro_input            = false;
    input_driver_block_hotkey                    = false;
 
-   if (current_input->keyboard_mapping_is_blocked 
+   if (current_input->keyboard_mapping_is_blocked
          && current_input->keyboard_mapping_is_blocked(current_input_data))
       input_driver_block_hotkey = true;
 
@@ -592,7 +592,7 @@ uint64_t input_menu_keys_pressed(void *data, uint64_t last_input)
       const struct retro_keybind *htkey = &input_config_binds[0][RARCH_ENABLE_HOTKEY];
 
 
-      if (htkey->valid 
+      if (htkey->valid
             && current_input->input_state(current_input_data, joypad_info,
                &binds[0], 0, RETRO_DEVICE_JOYPAD, 0, RARCH_ENABLE_HOTKEY))
          input_driver_block_libretro_input = true;
@@ -610,12 +610,12 @@ uint64_t input_menu_keys_pressed(void *data, uint64_t last_input)
          )
       {
          unsigned port;
-         unsigned port_max                  = 
-            settings->bools.input_all_users_control_menu 
+         unsigned port_max                  =
+            settings->bools.input_all_users_control_menu
             ? max_users : 1;
-         const input_device_driver_t *first = current_input->get_joypad_driver 
+         const input_device_driver_t *first = current_input->get_joypad_driver
             ? current_input->get_joypad_driver(current_input_data) : NULL;
-         const input_device_driver_t *sec   = current_input->get_sec_joypad_driver 
+         const input_device_driver_t *sec   = current_input->get_sec_joypad_driver
             ? current_input->get_sec_joypad_driver(current_input_data) : NULL;
 
          for (port = 0; port < port_max; port++)
@@ -760,11 +760,11 @@ uint64_t input_keys_pressed(void *data, uint64_t last_input)
    joypad_info.joy_idx                          = settings->uints.input_joypad_map[0];
    joypad_info.auto_binds                       = input_autoconf_binds[joypad_info.joy_idx];
    joypad_info.axis_threshold                   = input_driver_axis_threshold;
-   
+
    input_driver_block_libretro_input            = false;
    input_driver_block_hotkey                    = false;
 
-   if (     current_input->keyboard_mapping_is_blocked 
+   if (     current_input->keyboard_mapping_is_blocked
          && current_input->keyboard_mapping_is_blocked(current_input_data))
       input_driver_block_hotkey = true;
 
@@ -781,7 +781,7 @@ uint64_t input_keys_pressed(void *data, uint64_t last_input)
 
    game_focus_toggle_valid                      = binds[RARCH_GAME_FOCUS_TOGGLE].valid;
 
-   /* Allows rarch_focus_toggle hotkey to still work 
+   /* Allows rarch_focus_toggle hotkey to still work
     * even though every hotkey is blocked */
    if (check_input_driver_block_hotkey(
             focus_normal, focus_binds_auto) && game_focus_toggle_valid)
@@ -814,7 +814,7 @@ uint64_t input_keys_pressed(void *data, uint64_t last_input)
       }
 
 #ifdef HAVE_OVERLAY
-      if (overlay_ptr && 
+      if (overlay_ptr &&
             input_overlay_key_pressed(overlay_ptr, i))
       {
          ret |= (UINT64_C(1) << i);
@@ -839,7 +839,7 @@ uint64_t input_keys_pressed(void *data, uint64_t last_input)
 #endif
 
 #ifdef HAVE_NETWORKGAMEPAD
-      if (input_driver_remote && 
+      if (input_driver_remote &&
             input_remote_key_pressed(i, 0))
       {
          ret |= (UINT64_C(1) << i);
@@ -1041,7 +1041,7 @@ bool input_driver_init_command(void)
    }
 
    input_driver_command = command_new();
-   
+
    if (command_network_new(
             input_driver_command,
             stdin_cmd_enable && !grab_stdin,

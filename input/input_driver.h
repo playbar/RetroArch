@@ -1,7 +1,7 @@
 /*  RetroArch - A frontend for libretro.
  *  Copyright (C) 2010-2014 - Hans-Kristian Arntzen
  *  Copyright (C) 2011-2017 - Daniel De Matteis
- * 
+ *
  *  RetroArch is free software: you can redistribute it and/or modify it under the terms
  *  of the GNU General Public License as published by the Free Software Found-
  *  ation, either version 3 of the License, or (at your option) any later version.
@@ -27,7 +27,7 @@
 #include "input_joypad_driver.h"
 #include "input_defines.h"
 
-#include "../msg_hash.h"
+#include "../src/msg_hash.h"
 
 RETRO_BEGIN_DECLS
 
@@ -62,19 +62,19 @@ struct retro_keybind
    enum msg_hash_enums enum_idx;
    enum retro_key key;
 
-   /* Joypad key. Joypad POV (hats) 
+   /* Joypad key. Joypad POV (hats)
     * are embedded into this key as well. */
    uint64_t joykey;
 
-   /* Default key binding value - 
+   /* Default key binding value -
     * for resetting bind to default */
    uint64_t def_joykey;
 
-   /* Joypad axis. Negative and positive axes 
+   /* Joypad axis. Negative and positive axes
     * are embedded into this variable. */
    uint32_t joyaxis;
 
-   /* Default joy axis binding value - 
+   /* Default joy axis binding value -
     * for resetting bind to default */
    uint32_t def_joyaxis;
 
@@ -87,7 +87,7 @@ struct retro_keybind
 
 typedef struct input_driver
 {
-   /* Inits input driver. 
+   /* Inits input driver.
     */
    void *(*init)(const char *joypad_driver);
 
