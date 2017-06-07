@@ -230,17 +230,6 @@ static bool winraw_set_mouse_input(HWND window, bool grab)
    return true;
 }
 
-static int16_t winraw_keyboard_state(winraw_input_t *wr, unsigned id)
-{
-   unsigned key;
-
-   if (id >= RETROK_LAST)
-      return 0;
-
-   key = input_keymaps_translate_rk_to_keysym((enum retro_key)id);
-   return wr->keyboard.keys[key];
-}
-
 static int16_t winraw_mouse_state(winraw_mouse_t *mouse, bool abs, unsigned id)
 {
    switch (id)
@@ -270,8 +259,9 @@ static int16_t winraw_joypad_state(winraw_input_t *wr,
       unsigned port, unsigned id)
 {
    const struct retro_keybind *bind = &binds[id];
+   unsigned key = rarch_keysym_lut[(enum retro_key)bind->key];
 
-   if (!wr->kbd_mapp_block && winraw_keyboard_state(wr, bind->key))
+   if (!wr->kbd_mapp_block && (bind->key < RETROK_LAST) && wr->keyboard.keys[key])
       return 1;
 
    return input_joypad_pressed(wr->joypad, joypad_info, port, binds, id);
@@ -459,6 +449,14 @@ static void winraw_poll(void *d)
 
    memcpy(&wr->keyboard, g_keyboard, sizeof(winraw_keyboard_t));
 
+   /* following keys are not handled by windows raw input api */
+   wr->keyboard.keys[VK_LCONTROL] = GetAsyncKeyState(VK_LCONTROL) >> 1 ? 1 : 0;
+   wr->keyboard.keys[VK_RCONTROL] = GetAsyncKeyState(VK_RCONTROL) >> 1 ? 1 : 0;
+   wr->keyboard.keys[VK_LMENU]    = GetAsyncKeyState(VK_LMENU)    >> 1 ? 1 : 0;
+   wr->keyboard.keys[VK_RMENU]    = GetAsyncKeyState(VK_RMENU)    >> 1 ? 1 : 0;
+   wr->keyboard.keys[VK_LSHIFT]   = GetAsyncKeyState(VK_LSHIFT)   >> 1 ? 1 : 0;
+   wr->keyboard.keys[VK_RSHIFT]   = GetAsyncKeyState(VK_RSHIFT)   >> 1 ? 1 : 0;
+
    for (i = 0; i < g_mouse_cnt; ++i)
    {
       wr->mice[i].x = g_mice[i].x;
@@ -486,7 +484,12 @@ static int16_t winraw_input_state(void *d,
    switch (device)
    {
       case RETRO_DEVICE_KEYBOARD:
-         return winraw_keyboard_state(wr, id);
+         if (id < RETROK_LAST)
+         {
+            unsigned key = rarch_keysym_lut[(enum retro_key)id];
+            return wr->keyboard.keys[key];
+         }
+         break;
       case RETRO_DEVICE_MOUSE:
          if (port < g_mouse_cnt)
             return winraw_mouse_state(&wr->mice[port], false, id);
@@ -532,10 +535,10 @@ static void winraw_free(void *d)
 
 static uint64_t winraw_get_capabilities(void *u)
 {
-   return RETRO_DEVICE_KEYBOARD |
-          RETRO_DEVICE_MOUSE |
-          RETRO_DEVICE_JOYPAD |
-          RETRO_DEVICE_ANALOG;
+   return (1 << RETRO_DEVICE_KEYBOARD) |
+          (1 << RETRO_DEVICE_MOUSE) |
+          (1 << RETRO_DEVICE_JOYPAD) |
+          (1 << RETRO_DEVICE_ANALOG);
 }
 
 static void winraw_grab_mouse(void *d, bool grab)
