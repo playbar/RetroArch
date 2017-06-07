@@ -37,6 +37,35 @@ add_library(retroarch-activity SHARED
             ${LIBRETRO_COMM_DIR}/audio/resampler/drivers/sinc_resampler_neon.S
             ${RARCH_DIR}/audio/drivers_resampler/cc_resampler_neon.S
                 ${RARCH_DIR}/griffin/griffin1.c
+                ${RARCH_DIR}/gfx/video_shader_parse.c
+                ${RARCH_DIR}/gfx/drivers_shader/shader_null.c
+                ${RARCH_DIR}/gfx/drivers_shader/shader_glsl.c
+                ${RARCH_DIR}/libretro-common/formats/image_texture.c
+                ${RARCH_DIR}/libretro-common/formats/tga/rtga.c
+                ${RARCH_DIR}/cores/libretro-imageviewer/image_core.c
+                ${RARCH_DIR}/libretro-common/formats/image_transfer.c
+                ${RARCH_DIR}/libretro-common/formats/png/rpng.c
+                ${RARCH_DIR}/libretro-common/formats/png/rpng_encode.c
+                ${RARCH_DIR}/libretro-common/formats/jpeg/rjpeg.c
+                ${RARCH_DIR}/libretro-common/formats/bmp/rbmp.c
+                ${RARCH_DIR}/libretro-common/formats/bmp/rbmp_encode.c
+                ${RARCH_DIR}/libretro-common/formats/wav/rwav.c
+                ${RARCH_DIR}/gfx/drivers/vulkan.c
+                ${RARCH_DIR}/gfx/video_renderchain_driver.c
+                ${RARCH_DIR}/gfx/drivers_renderchain/null_renderchain.c
+                ${RARCH_DIR}/gfx/common/gl_common.c
+                ${RARCH_DIR}/gfx/drivers/gl.c
+                ${RARCH_DIR}/libretro-common/gfx/gl_capabilities.c
+                ${RARCH_DIR}/gfx/drivers_renderchain/gl_legacy_renderchain.c
+                ${RARCH_DIR}/libretro-common/glsym/rglgen.c
+                ${RARCH_DIR}/libretro-common/glsym/glsym_es3.c
+                ${RARCH_DIR}/gfx/drivers/nullgfx.c
+                ${RARCH_DIR}/gfx/drivers_font_renderer/bitmapfont.c
+                ${RARCH_DIR}/gfx/font_driver.c
+                ${RARCH_DIR}/gfx/drivers_font_renderer/stb_unicode.c
+                ${RARCH_DIR}/gfx/drivers_font_renderer/stb.c
+                ${RARCH_DIR}/gfx/drivers_font/gl_raster_font.c
+                ${RARCH_DIR}/gfx/drivers_font/vulkan_raster_font.c
                 ${RARCH_DIR}/tasks/task_autodetect.c
                 ${RARCH_DIR}/tasks/task_audio_mixer.c
                 ${RARCH_DIR}/input/input_joypad_driver.c
