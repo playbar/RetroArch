@@ -111,3 +111,4 @@ obj-unix/
 build/
 *.gitignore
 *.udb
+*.opendb
