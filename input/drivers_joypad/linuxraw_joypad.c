@@ -82,18 +82,17 @@ static void linuxraw_poll_pad(struct linuxraw_joypad *pad)
    }
 }
 
-static bool linuxraw_joypad_init_pad(const char *path, struct linuxraw_joypad *pad)
+static bool linuxraw_joypad_init_pad(const char *path,
+      struct linuxraw_joypad *pad)
 {
-   if (pad->fd >= 0)
-      return false;
-
    /* Device can have just been created, but not made accessible (yet).
       IN_ATTRIB will signal when permissions change. */
    if (access(path, R_OK) < 0)
       return false;
+   if (pad->fd >= 0)
+      return false;
 
-   pad->fd = open(path, O_RDONLY | O_NONBLOCK);
-
+   pad->fd     = open(path, O_RDONLY | O_NONBLOCK);
    *pad->ident = '\0';
 
    if (pad->fd >= 0)
@@ -106,14 +105,12 @@ static bool linuxraw_joypad_init_pad(const char *path, struct linuxraw_joypad *p
       else
          RARCH_ERR("[Device]: Didn't find ident of %s.\n", path);
 
-      if (!epoll_add(&linuxraw_epoll, pad->fd, pad))
-         goto error;
-
-      return true;
+      if (epoll_add(&linuxraw_epoll, pad->fd, pad))
+         return true;
    }
 
-error:
-   RARCH_ERR("[Device]: Failed to open pad %s (error: %s).\n", path, strerror(errno));
+   RARCH_ERR("[Device]: Failed to open pad %s (error: %s).\n",
+         path, strerror(errno));
    return false;
 }
 
@@ -123,85 +120,6 @@ static const char *linuxraw_joypad_name(unsigned pad)
       return NULL;
 
    return linuxraw_pads[pad].ident;
-}
-
-static void handle_plugged_pad(void)
-{
-   int i, rc;
-   size_t event_size  = sizeof(struct inotify_event) + NAME_MAX + 1;
-   uint8_t *event_buf = (uint8_t*)calloc(1, event_size);
-
-   if (!event_buf)
-      return;
-
-   while ((rc = read(linuxraw_inotify, event_buf, event_size)) >= 0)
-   {
-      struct inotify_event *event = (struct inotify_event*)&event_buf[0];
-
-      /* Can read multiple events in one read() call. */
-
-      for (i = 0; i < rc; i += event->len + sizeof(struct inotify_event))
-      {
-         unsigned idx;
-
-         event = (struct inotify_event*)&event_buf[i];
-
-         if (strstr(event->name, "js") != event->name)
-            continue;
-
-         idx = strtoul(event->name + 2, NULL, 0);
-         if (idx >= MAX_USERS)
-            continue;
-
-         if (event->mask & IN_DELETE)
-         {
-            if (linuxraw_pads[idx].fd >= 0)
-            {
-               if (linuxraw_hotplug)
-                  input_autoconfigure_disconnect(idx, linuxraw_pads[idx].ident);
-
-               close(linuxraw_pads[idx].fd);
-               linuxraw_pads[idx].buttons = 0;
-               memset(linuxraw_pads[idx].axes, 0, sizeof(linuxraw_pads[idx].axes));
-               linuxraw_pads[idx].fd = -1;
-               *linuxraw_pads[idx].ident = '\0';
-
-               if (!input_autoconfigure_connect(
-                     NULL,
-                     NULL,
-                     linuxraw_joypad_name(idx),
-                     idx,
-                     0,
-                     0))
-                  input_config_set_device_name(idx, NULL);
-            }
-         }
-         /* Sometimes, device will be created before access to it is established. */
-         else if (event->mask & (IN_CREATE | IN_ATTRIB))
-         {
-            char path[PATH_MAX_LENGTH];
-
-            path[0] = '\0';
-
-            snprintf(path, sizeof(path), "/dev/input/%s", event->name);
-
-            if (     !string_is_empty(linuxraw_pads[idx].ident) 
-                  && linuxraw_joypad_init_pad(path, &linuxraw_pads[idx]))
-            {
-               if (!input_autoconfigure_connect(
-                     linuxraw_pads[idx].ident,
-                     NULL,
-                     linuxraw_joypad.ident,
-                     idx,
-                     0,
-                     0))
-                  input_config_set_device_name(idx, linuxraw_joypad_name(idx));
-            }
-         }
-      }
-   }
-
-   free(event_buf);
 }
 
 static void linuxraw_joypad_poll(void)
@@ -222,7 +140,87 @@ retry:
       if (ptr)
          linuxraw_poll_pad(ptr);
       else
-         handle_plugged_pad();
+      {
+         /* handle plugged pad */
+         int j, rc;
+         size_t event_size  = sizeof(struct inotify_event) + NAME_MAX + 1;
+         uint8_t *event_buf = (uint8_t*)calloc(1, event_size);
+
+         while ((rc = read(linuxraw_inotify, event_buf, event_size)) >= 0)
+         {
+            struct inotify_event *event = (struct inotify_event*)&event_buf[0];
+
+            event_buf[rc-1] = '\0';
+
+            /* Can read multiple events in one read() call. */
+
+            for (j = 0; j < rc; j += event->len + sizeof(struct inotify_event))
+            {
+               unsigned idx;
+
+               event = (struct inotify_event*)&event_buf[j];
+
+               if (strstr(event->name, "js") != event->name)
+                  continue;
+
+               idx = strtoul(event->name + 2, NULL, 0);
+               if (idx >= MAX_USERS)
+                  continue;
+
+               if (event->mask & IN_DELETE)
+               {
+                  if (linuxraw_pads[idx].fd >= 0)
+                  {
+                     if (linuxraw_hotplug)
+                        input_autoconfigure_disconnect(idx,
+                              linuxraw_pads[idx].ident);
+
+                     close(linuxraw_pads[idx].fd);
+                     linuxraw_pads[idx].buttons = 0;
+                     memset(linuxraw_pads[idx].axes, 0,
+                           sizeof(linuxraw_pads[idx].axes));
+                     linuxraw_pads[idx].fd = -1;
+                     *linuxraw_pads[idx].ident = '\0';
+
+                     if (!input_autoconfigure_connect(
+                              NULL,
+                              NULL,
+                              linuxraw_joypad_name(idx),
+                              idx,
+                              0,
+                              0))
+                        input_config_set_device_name(idx, NULL);
+                  }
+               }
+               /* Sometimes, device will be created before 
+                * access to it is established. */
+               else if (event->mask & (IN_CREATE | IN_ATTRIB))
+               {
+                  char path[PATH_MAX_LENGTH];
+
+                  path[0] = '\0';
+
+                  snprintf(path, sizeof(path), "/dev/input/%s", event->name);
+
+                  if (     !string_is_empty(linuxraw_pads[idx].ident) 
+                        && linuxraw_joypad_init_pad(path, &linuxraw_pads[idx]))
+                  {
+                     if (!input_autoconfigure_connect(
+                              linuxraw_pads[idx].ident,
+                              NULL,
+                              linuxraw_joypad.ident,
+                              idx,
+                              0,
+                              0))
+                        input_config_set_device_name(idx,
+                              linuxraw_joypad_name(idx));
+                  }
+               }
+            }
+         }
+
+         free(event_buf);
+      }
    }
 }
 
