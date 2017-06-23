@@ -148,6 +148,7 @@ static size_t audio_driver_buffer_size                   = 0;
 static size_t audio_driver_data_ptr                      = 0;
 
 static bool audio_driver_control                         = false; 
+static bool audio_driver_mixer_mute_enable               = false;
 static bool audio_driver_mute_enable                     = false;
 static bool audio_driver_use_float                       = false;
 static bool audio_driver_active                          = false;
@@ -157,6 +158,7 @@ static bool audio_mixer_active                           = false;
 static float audio_driver_rate_control_delta             = 0.0f;
 static float audio_driver_input                          = 0.0f;
 static float audio_driver_volume_gain                    = 0.0f;
+static float audio_driver_mixer_volume_gain              = 0.0f;
 
 static float *audio_driver_input_data                    = NULL;
 static float *audio_driver_output_samples_buf            = NULL;
@@ -533,6 +535,8 @@ static bool audio_driver_flush(const int16_t *data, size_t samples)
    bool is_slowmotion                                   = false;
    const void *output_data                              = NULL;
    unsigned output_frames                               = 0;
+   float audio_volume_gain                              = !audio_driver_mute_enable ? 
+      audio_driver_volume_gain : 0.0f;
 
    src_data.data_in                                     = NULL;
    src_data.data_out                                    = NULL;
@@ -546,13 +550,13 @@ static bool audio_driver_flush(const int16_t *data, size_t samples)
    runloop_get_status(&is_paused, &is_idle, &is_slowmotion,
          &is_perfcnt_enable);
 
-   if (is_paused || audio_driver_mute_enable)
+   if (is_paused)
       return true;
    if (!audio_driver_active || !audio_driver_input_data)
       return false;
 
    convert_s16_to_float(audio_driver_input_data, data, samples,
-         audio_driver_volume_gain);
+         audio_volume_gain);
 
    src_data.data_in               = audio_driver_input_data;
    src_data.input_frames          = samples >> 1;
@@ -621,7 +625,14 @@ static bool audio_driver_flush(const int16_t *data, size_t samples)
    audio_driver_resampler->process(audio_driver_resampler_data, &src_data);
 
    if (audio_mixer_active)
-      audio_mixer_mix(audio_driver_output_samples_buf, src_data.output_frames);
+   {
+      bool override     = audio_driver_mixer_mute_enable ? true : 
+         (audio_driver_mixer_volume_gain != 0.0f) ? true : false;
+      float mixer_gain  = !audio_driver_mixer_mute_enable ? 
+         audio_driver_mixer_volume_gain : 0.0f;
+      audio_mixer_mix(audio_driver_output_samples_buf,
+            src_data.output_frames, mixer_gain, override);
+   }
 
    output_data        = audio_driver_output_samples_buf;
    output_frames      = (unsigned)src_data.output_frames;
@@ -725,11 +736,6 @@ size_t audio_driver_sample_batch_rewind(const int16_t *data, size_t frames)
       audio_driver_rewind_buf[--audio_driver_rewind_ptr] = data[i];
 
    return frames;
-}
-
-void audio_driver_set_volume_gain(float gain)
-{
-   audio_driver_volume_gain = gain;
 }
 
 void audio_driver_dsp_filter_free(void)
@@ -945,15 +951,19 @@ static void audio_mixer_play_stop_cb(audio_mixer_sound_t *sound, unsigned reason
       case AUDIO_MIXER_SOUND_FINISHED:
          audio_mixer_destroy(sound);
 
-         if (audio_mixer_streams[idx].buf != NULL)
-            free(audio_mixer_streams[idx].buf);
-         audio_mixer_streams[idx].state   = AUDIO_STREAM_STATE_NONE;
-         audio_mixer_streams[idx].volume  = 0.0f;
-         audio_mixer_streams[idx].buf     = NULL;
-         audio_mixer_streams[idx].stop_cb = NULL;
-         audio_mixer_streams[idx].handle  = NULL;
-         audio_mixer_streams[idx].voice   = NULL;
-         audio_mixer_current_max_idx--;
+         if (idx >= 0)
+         {
+            unsigned i = (unsigned)idx;
+            if (audio_mixer_streams[i].buf != NULL)
+               free(audio_mixer_streams[i].buf);
+            audio_mixer_streams[i].state   = AUDIO_STREAM_STATE_NONE;
+            audio_mixer_streams[i].volume  = 0.0f;
+            audio_mixer_streams[i].buf     = NULL;
+            audio_mixer_streams[i].stop_cb = NULL;
+            audio_mixer_streams[i].handle  = NULL;
+            audio_mixer_streams[i].voice   = NULL;
+            audio_mixer_current_max_idx--;
+         }
          break;
       case AUDIO_MIXER_SOUND_STOPPED:
          break;
@@ -1140,21 +1150,13 @@ bool audio_driver_has_callback(void)
 
 bool audio_driver_toggle_mute(void)
 {
-   bool new_mute_state  = !audio_driver_mute_enable;
-   if (!audio_driver_context_audio_data)
-      return false;
-   if (!audio_driver_active)
-      return false;
+   audio_driver_mute_enable  = !audio_driver_mute_enable;
+   return true;
+}
 
-   audio_driver_mute_enable = new_mute_state;
-
-   if (new_mute_state)
-      command_event(CMD_EVENT_AUDIO_STOP, NULL);
-   else if (!command_event(CMD_EVENT_AUDIO_START, NULL))
-   {
-      audio_driver_active = false;
-      return false;
-   }
+bool audio_driver_mixer_toggle_mute(void)
+{
+   audio_driver_mixer_mute_enable  = !audio_driver_mixer_mute_enable;
    return true;
 }
 
@@ -1254,10 +1256,26 @@ void audio_set_bool(enum audio_action action, bool val)
    }
 }
 
+/**
+ * db_to_gain:
+ * @db          : Decibels.
+ *
+ * Converts decibels to voltage gain.
+ *
+ * Returns: voltage gain value.
+ **/
+#define db_to_gain(db) (powf(10.0f, (db) / 20.0f))
+
 void audio_set_float(enum audio_action action, float val)
 {
    switch (action)
    {
+      case AUDIO_ACTION_VOLUME_GAIN:
+         audio_driver_volume_gain        = db_to_gain(val);
+         break;
+      case AUDIO_ACTION_MIXER_VOLUME_GAIN:
+         audio_driver_mixer_volume_gain  = db_to_gain(val);
+         break;
       case AUDIO_ACTION_RATE_CONTROL_DELTA:
          audio_driver_rate_control_delta = val;
          break;
@@ -1285,6 +1303,8 @@ bool *audio_get_bool_ptr(enum audio_action action)
 {
    switch (action)
    {
+      case AUDIO_ACTION_MIXER_MUTE_ENABLE:
+         return &audio_driver_mixer_mute_enable;
       case AUDIO_ACTION_MUTE_ENABLE:
          return &audio_driver_mute_enable;
       case AUDIO_ACTION_NONE:

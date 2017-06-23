@@ -42,7 +42,6 @@
 #include <audio/audio_mixer.h>
 #include <compat/posix_string.h>
 #include <file/file_path.h>
-#include <retro_stat.h>
 #include <retro_assert.h>
 #include <retro_miscellaneous.h>
 #include <queues/message_queue.h>
@@ -90,7 +89,6 @@
 #include "driver.h"
 #include "input/input_driver.h"
 #include "input/input_config.h"
-#include "input/input_keyboard.h"
 #include "msg_hash.h"
 #include "movie.h"
 #include "dirs.h"
@@ -434,7 +432,7 @@ static void retroarch_print_help(const char *arg0)
 
    puts("  -h, --help            Show this help message.");
    puts("  -v, --verbose         Verbose logging.");
-   puts("      --log-file=FILE   Log messages to FILE.");
+   puts("      --log-file FILE   Log messages to FILE.");
    puts("      --version         Show version.");
    puts("      --features        Prints available features compiled into "
          "program.");
@@ -2338,9 +2336,9 @@ static enum runloop_state runloop_check_state(
          ((settings->uints.input_menu_toggle_gamepad_combo != INPUT_TOGGLE_NONE) &&
           input_driver_toggle_button_combo(
              settings->uints.input_menu_toggle_gamepad_combo, last_input)))
-      current_input |= (UINT64_C(1) << RARCH_MENU_TOGGLE);
-   if (menu_driver_binding_state)
-      current_input = 0;
+   {
+      BIT64_SET(current_input, RARCH_MENU_TOGGLE);
+   }
 #endif
 
    if (input_driver_flushing_input)
@@ -2356,6 +2354,11 @@ static enum runloop_state runloop_check_state(
    }
 
    video_driver_get_status(&frame_count, &is_alive, &is_focused);
+
+#ifdef HAVE_MENU
+   if (menu_driver_binding_state)
+      current_input = 0;
+#endif
 
 #ifdef HAVE_OVERLAY
    /* Check next overlay */
@@ -2382,6 +2385,8 @@ static enum runloop_state runloop_check_state(
          bool fullscreen_toggled = !runloop_paused
 #ifdef HAVE_MENU
             || menu_is_alive;
+#else
+;
 #endif
 
          if (fullscreen_toggled)

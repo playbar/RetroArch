@@ -161,8 +161,6 @@ static retro_time_t video_driver_frame_time_samples[MEASURE_FRAME_TIME_SAMPLES_C
 static uint64_t video_driver_frame_time_count            = 0;
 static uint64_t video_driver_frame_count                 = 0;
 
-static video_viewport_t video_viewport_custom;
-
 static void *video_driver_data                           = NULL;
 static video_driver_t *current_video                     = NULL;
 
@@ -387,6 +385,17 @@ static const shader_backend_t *shader_ctx_drivers[] = {
    &hlsl_backend,
 #endif
    &shader_null_backend,
+   NULL
+};
+
+static const renderchain_driver_t *renderchain_drivers[] = {
+#if defined(_WIN32) && defined(HAVE_D3D9) && defined(HAVE_CG)
+   &cg_d3d9_renderchain,
+#endif
+#ifdef _XBOX
+   &xdk_d3d_renderchain,
+#endif
+   &null_renderchain,
    NULL
 };
 
@@ -882,11 +891,11 @@ static bool video_driver_init_internal(bool *video_is_threaded)
 {
    video_info_t video;
    unsigned max_dim, scale, width, height;
+   video_viewport_t *custom_vp            = NULL;
    const input_driver_t *tmp              = NULL;
    const struct retro_game_geometry *geom = NULL;
    rarch_system_info_t *system            = NULL;
    static uint16_t dummy_pixels[32]       = {0};
-   video_viewport_t *custom_vp            = &video_viewport_custom;
    settings_t *settings                   = config_get_ptr();
    struct retro_system_av_info *av_info   = &video_driver_av_info;
 
@@ -926,6 +935,8 @@ static bool video_driver_init_internal(bool *video_is_threaded)
    video_driver_set_viewport_config();
 
    /* Update CUSTOM viewport. */
+   custom_vp = video_viewport_get_custom();
+
    if (settings->uints.video_aspect_ratio_idx == ASPECT_RATIO_CUSTOM)
    {
       float default_aspect = aspectratio_lut[ASPECT_RATIO_CORE].value;
@@ -1063,7 +1074,8 @@ static bool video_driver_init_internal(bool *video_is_threaded)
    command_event(CMD_EVENT_OVERLAY_DEINIT, NULL);
    command_event(CMD_EVENT_OVERLAY_INIT, NULL);
 
-   video_driver_cached_frame_set(&dummy_pixels, 4, 4, 8);
+   if (!core_is_game_loaded())
+      video_driver_cached_frame_set(&dummy_pixels, 4, 4, 8);
 
 #if defined(PSP)
    video_driver_set_texture_frame(&dummy_pixels, false, 1, 1, 1.0f);
@@ -1674,7 +1686,7 @@ void video_driver_set_viewport_core(void)
 
 void video_driver_reset_custom_viewport(void)
 {
-   struct video_viewport *custom_vp = &video_viewport_custom;
+   struct video_viewport *custom_vp = video_viewport_get_custom();
 
    custom_vp->width  = 0;
    custom_vp->height = 0;
@@ -2135,7 +2147,7 @@ void video_viewport_get_scaled_integer(struct video_viewport *vp,
 
    if (settings->uints.video_aspect_ratio_idx == ASPECT_RATIO_CUSTOM)
    {
-      struct video_viewport *custom = &video_viewport_custom;
+      struct video_viewport *custom = video_viewport_get_custom();
 
       if (custom)
       {
@@ -2200,7 +2212,8 @@ struct retro_system_av_info *video_viewport_get_system_av_info(void)
 
 struct video_viewport *video_viewport_get_custom(void)
 {
-   return &video_viewport_custom;
+   settings_t *settings = config_get_ptr();
+   return &settings->video_viewport_custom;
 }
 
 unsigned video_pixel_get_alignment(unsigned pitch)
@@ -2448,11 +2461,13 @@ void video_driver_build_info(video_frame_info_t *video_info)
    bool is_idle                      = false;
    bool is_slowmotion                = false;
    settings_t *settings              = NULL;
+   video_viewport_t *custom_vp       = NULL;
 #ifdef HAVE_THREADS
    bool is_threaded                  = video_driver_is_threaded();
    video_driver_threaded_lock(is_threaded);
 #endif
    settings                          = config_get_ptr();
+   custom_vp                         = &settings->video_viewport_custom;
    video_info->refresh_rate          = settings->floats.video_refresh_rate;
    video_info->black_frame_insertion = 
       settings->bools.video_black_frame_insertion;
@@ -2473,12 +2488,12 @@ void video_driver_build_info(video_frame_info_t *video_info)
    video_info->font_msg_color_r      = settings->floats.video_msg_color_r;
    video_info->font_msg_color_g      = settings->floats.video_msg_color_g;
    video_info->font_msg_color_b      = settings->floats.video_msg_color_b;
-   video_info->custom_vp_x           = video_viewport_custom.x;
-   video_info->custom_vp_y           = video_viewport_custom.y;
-   video_info->custom_vp_width       = video_viewport_custom.width;
-   video_info->custom_vp_height      = video_viewport_custom.height;
-   video_info->custom_vp_full_width  = video_viewport_custom.full_width;
-   video_info->custom_vp_full_height = video_viewport_custom.full_height;
+   video_info->custom_vp_x           = custom_vp->x;
+   video_info->custom_vp_y           = custom_vp->y;
+   video_info->custom_vp_width       = custom_vp->width;
+   video_info->custom_vp_height      = custom_vp->height;
+   video_info->custom_vp_full_width  = custom_vp->full_width;
+   video_info->custom_vp_full_height = custom_vp->full_height;
 
    video_info->fps_text[0]           = '\0';
 
@@ -2502,9 +2517,7 @@ void video_driver_build_info(video_frame_info_t *video_info)
    video_info->xmb_alpha_factor       = settings->uints.menu_xmb_alpha_factor;
    video_info->menu_wallpaper_opacity = settings->floats.menu_wallpaper_opacity;
 
-   if (!settings->bools.menu_pause_libretro)
-      video_info->libretro_running    = (rarch_ctl(RARCH_CTL_IS_INITED, NULL)
-            && !rarch_ctl(RARCH_CTL_IS_DUMMY_CORE, NULL));
+   video_info->libretro_running       = core_is_game_loaded();
 #else
    video_info->menu_is_alive          = false;
    video_info->menu_footer_opacity    = 0.0f;
@@ -3352,4 +3365,24 @@ bool video_shader_driver_wrap_type(video_shader_ctx_wrap_t *wrap)
 {
    wrap->type = current_shader->wrap_type(shader_data, wrap->idx);
    return true;
+}
+
+bool renderchain_init_first(const renderchain_driver_t **renderchain_driver,
+	void **renderchain_handle)
+{
+   unsigned i;
+
+   for (i = 0; renderchain_drivers[i]; i++)
+   {
+      void *data = renderchain_drivers[i]->chain_new();
+
+      if (!data)
+         continue;
+
+      *renderchain_driver = renderchain_drivers[i];
+      *renderchain_handle = data;
+      return true;
+   }
+
+   return false;
 }

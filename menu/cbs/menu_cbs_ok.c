@@ -17,7 +17,6 @@
 #include <compat/strl.h>
 #include <file/file_path.h>
 #include <retro_assert.h>
-#include <retro_stat.h>
 #include <string/stdstring.h>
 #include <streams/file_stream.h>
 #include <lists/string_list.h>
@@ -652,6 +651,14 @@ int generic_action_ok_displaylist_push(const char *path,
          info_path          = path;
          info_label         = msg_hash_to_str(MENU_ENUM_LABEL_DEFERRED_MENU_SETTINGS_LIST);
          info.enum_idx      = MENU_ENUM_LABEL_DEFERRED_MENU_SETTINGS_LIST;
+         dl_type            = DISPLAYLIST_GENERIC;
+         break;
+      case ACTION_OK_DL_MENU_VIEWS_SETTINGS_LIST:
+         info.directory_ptr = idx;
+         info.type          = type;
+         info_path          = path;
+         info_label         = msg_hash_to_str(MENU_ENUM_LABEL_DEFERRED_MENU_VIEWS_SETTINGS_LIST);
+         info.enum_idx      = MENU_ENUM_LABEL_DEFERRED_MENU_VIEWS_SETTINGS_LIST;
          dl_type            = DISPLAYLIST_GENERIC;
          break;
       case ACTION_OK_DL_USER_INTERFACE_SETTINGS_LIST:
@@ -3321,6 +3328,13 @@ static int action_ok_menu_list(const char *path,
          entry_idx, ACTION_OK_DL_MENU_SETTINGS_LIST);
 }
 
+static int action_ok_menu_views_list(const char *path,
+      const char *label, unsigned type, size_t idx, size_t entry_idx)
+{
+   return generic_action_ok_displaylist_push(path, NULL, label, type, idx,
+         entry_idx, ACTION_OK_DL_MENU_VIEWS_SETTINGS_LIST);
+}
+
 static int action_ok_user_interface_list(const char *path,
       const char *label, unsigned type, size_t idx, size_t entry_idx)
 {
@@ -4330,13 +4344,14 @@ static int action_ok_netplay_enable_client(const char *path,
       const char *label, unsigned type, size_t idx, size_t entry_idx)
 {
 #ifdef HAVE_NETWORKING
+   menu_input_ctx_line_t line;
    if (netplay_driver_ctl(RARCH_NETPLAY_CTL_IS_DATA_INITED, NULL))
       command_event(CMD_EVENT_NETPLAY_DEINIT, NULL);
    netplay_driver_ctl(RARCH_NETPLAY_CTL_ENABLE_CLIENT, NULL);
 
    /* If no host was specified in the config, ask for one */
-   menu_input_ctx_line_t line;
    memset(&line, 0, sizeof(line));
+
    line.label = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_NETPLAY_IP_ADDRESS);
    line.label_setting = "no_setting";
    line.cb = action_ok_netplay_enable_client_hostname_cb;
@@ -4728,6 +4743,9 @@ static int menu_cbs_init_bind_ok_compare_label(menu_file_list_cbs_t *cbs,
             break;
          case MENU_ENUM_LABEL_MENU_SETTINGS:
             BIND_ACTION_OK(cbs, action_ok_menu_list);
+            break;
+         case MENU_ENUM_LABEL_MENU_VIEWS_SETTINGS:
+            BIND_ACTION_OK(cbs, action_ok_menu_views_list);
             break;
          case MENU_ENUM_LABEL_USER_INTERFACE_SETTINGS:
             BIND_ACTION_OK(cbs, action_ok_user_interface_list);

@@ -20,6 +20,7 @@
 
 #include <boolean.h>
 #include "gfx/video_defines.h"
+#include "input/input_driver.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -219,7 +220,7 @@ static unsigned aspect_ratio_idx = ASPECT_RATIO_CORE;
 /* Save configuration file on exit. */
 static bool config_save_on_exit = true;
 
-static bool show_hidden_files = true;
+static bool show_hidden_files = false;
 
 static const bool overlay_hide_in_menu = true;
 
@@ -228,7 +229,15 @@ static const bool display_keyboard_overlay = false;
 #ifdef HAVE_MENU
 #include "menu/menu_driver.h"
 
-static bool default_block_config_read = true;
+static bool default_block_config_read    = true;
+
+static bool menu_show_online_updater     = true;
+
+#if defined(HAVE_LAKKA) || defined(VITA)
+static bool menu_show_core_updater       = false;
+#else
+static bool menu_show_core_updater       = true;
+#endif
 
 #ifdef HAVE_XMB
 static unsigned xmb_scale_factor = 100;
@@ -413,6 +422,9 @@ static const float max_timing_skew = 0.05;
 
 /* Default audio volume in dB. (0.0 dB == unity gain). */
 static const float audio_volume = 0.0;
+
+/* Default audio volume of the audio mixer in dB. (0.0 dB == unity gain). */
+static const float audio_mixer_volume = 0.0;
 
 #ifdef HAVE_WASAPI
 /* WASAPI defaults */

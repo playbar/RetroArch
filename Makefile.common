@@ -105,7 +105,7 @@ endif
 
 ifneq ($(findstring BSD,$(OS)),)
    BSD_LOCAL_INC += -I/usr/local/include
-   OBJ += frontend/drivers/platform_bsd.o
+	HAVE_UNIX = 1
 endif
 
 ifneq ($(findstring Darwin,$(OS)),)
@@ -119,11 +119,13 @@ ifneq ($(findstring Linux,$(OS)),)
    LIBS += -lrt
    OBJ += input/drivers/linuxraw_input.o \
           input/common/linux_common.o \
-          input/common/epoll_common.o \
-          input/drivers_joypad/linuxraw_joypad.o \
-          frontend/drivers/platform_linux.o
+          input/drivers_joypad/linuxraw_joypad.o
+	HAVE_UNIX = 1
 endif
 
+ifeq ($(HAVE_UNIX), 1)
+	OBJ += frontend/drivers/platform_unix.o
+endif
 
 ifeq ($(findstring Haiku,$(OS)),)
    LIBS += -lm
@@ -157,7 +159,6 @@ OBJ += frontend/frontend.o \
        retroarch.o \
 		 dirs.o \
 		 paths.o \
-       input/input_keyboard.o \
        command.o \
        msg_hash.o \
        intl/msg_hash_us.o \
@@ -176,7 +177,6 @@ OBJ += frontend/frontend.o \
        $(LIBRETRO_COMM_DIR)/streams/file_stream.o \
        $(LIBRETRO_COMM_DIR)/streams/interface_stream.o \
        $(LIBRETRO_COMM_DIR)/streams/memory_stream.o \
-       $(LIBRETRO_COMM_DIR)/file/retro_stat.o \
        $(LIBRETRO_COMM_DIR)/lists/string_list.o \
        $(LIBRETRO_COMM_DIR)/string/stdstring.o \
        $(LIBRETRO_COMM_DIR)/memmap/memalign.o \
@@ -369,9 +369,7 @@ endif
 
 ifeq ($(HAVE_OSS), 1)
    OBJ += audio/drivers/oss.o
-endif
-
-ifeq ($(HAVE_OSS_BSD), 1)
+else ifeq ($(HAVE_OSS_BSD), 1)
    OBJ += audio/drivers/oss.o
 endif
 
@@ -708,7 +706,6 @@ ifeq ($(HAVE_UDEV), 1)
    DEFINES += $(UDEV_CFLAGS)
    LIBS += $(UDEV_LIBS)
    OBJ += input/drivers/udev_input.o \
-			 input/common/udev_common.o \
           input/drivers_joypad/udev_joypad.o
 endif
 
@@ -737,10 +734,10 @@ endif
 
 ifeq ($(HAVE_HID), 1)
    DEFINES += -DHAVE_HID
-   OBJ +=      input/input_hid_driver.o \
-               input/drivers_joypad/hid_joypad.o \
+   OBJ +=      input/drivers_joypad/hid_joypad.o \
                input/connect/joypad_connection.o \
                input/connect/connect_ps2adapter.o \
+               input/connect/connect_psxadapter.o \
                input/connect/connect_ps3.o \
                input/connect/connect_ps4.o \
                input/connect/connect_wii.o \
@@ -1037,7 +1034,6 @@ endif
 
 ifeq ($(HAVE_D3D9), 1)
    OBJ += gfx/drivers/d3d.o \
-          gfx/video_renderchain_driver.o \
           gfx/common/d3d_common.o \
           gfx/drivers_font/d3d_w32_font.o \
           gfx/drivers_context/d3d_ctx.o
@@ -1073,11 +1069,9 @@ ifeq ($(HAVE_7ZIP),1)
    HAVE_COMPRESSION = 1
    DEFINES += -DHAVE_7ZIP
    7ZOBJ = $(DEPS_DIR)/7zip/7zIn.o \
-           $(DEPS_DIR)/7zip/7zAlloc.o \
            $(DEPS_DIR)/7zip/Bra86.o \
            $(DEPS_DIR)/7zip/7zFile.o \
            $(DEPS_DIR)/7zip/7zStream.o \
-           $(DEPS_DIR)/7zip/7zBuf2.o \
            $(DEPS_DIR)/7zip/LzmaDec.o \
            $(DEPS_DIR)/7zip/7zCrcOpt.o \
            $(DEPS_DIR)/7zip/Bra.o \
