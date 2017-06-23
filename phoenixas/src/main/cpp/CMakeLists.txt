@@ -83,7 +83,6 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/libretro-common/formats/bmp/rbmp_encode.c
                 ${RARCH_DIR}/libretro-common/formats/wav/rwav.c
                 ${RARCH_DIR}/gfx/drivers/vulkan.c
-                ${RARCH_DIR}/gfx/video_renderchain_driver.c
                 ${RARCH_DIR}/gfx/drivers_renderchain/null_renderchain.c
                 ${RARCH_DIR}/gfx/common/gl_common.c
                 ${RARCH_DIR}/gfx/drivers/gl.c
@@ -173,7 +172,6 @@ add_library(retroarch-activity SHARED
                 ${RARCH_DIR}/libretro-common/streams/file_stream.c
                 ${RARCH_DIR}/libretro-common/streams/interface_stream.c
                 ${RARCH_DIR}/libretro-common/streams/memory_stream.c
-                ${RARCH_DIR}/libretro-common/file/retro_stat.c
                 ${RARCH_DIR}/src/list_special.c
                 ${RARCH_DIR}/libretro-common/string/stdstring.c
                 ${RARCH_DIR}/libretro-common/file/nbio/nbio_stdio.c

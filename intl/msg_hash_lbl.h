@@ -289,6 +289,8 @@ MSG_HASH(MENU_ENUM_LABEL_DEFERRED_MENU_FILE_BROWSER_SETTINGS_LIST,
       "deferred_menu_file_browser_settings_list")
 MSG_HASH(MENU_ENUM_LABEL_DEFERRED_MENU_SETTINGS_LIST,
       "deferred_menu_settings_list")
+MSG_HASH(MENU_ENUM_LABEL_DEFERRED_MENU_VIEWS_SETTINGS_LIST,
+      "deferred_menu_views_settings_list")
 MSG_HASH(MENU_ENUM_LABEL_DEFERRED_NETWORK_SETTINGS_LIST,
       "deferred_network_settings_list")
 MSG_HASH(MENU_ENUM_LABEL_DEFERRED_ONSCREEN_DISPLAY_SETTINGS_LIST,
@@ -1233,3 +1235,11 @@ MSG_HASH(MENU_ENUM_LABEL_ADD_TO_MIXER_AND_COLLECTION,
       "audio_add_to_mixer_and_collection")
 MSG_HASH(MENU_ENUM_LABEL_FILTER_BY_CURRENT_CORE,
       "filter_by_current_Core")
+MSG_HASH(MENU_ENUM_LABEL_AUDIO_MIXER_VOLUME,
+      "audio_mixer_volume")
+MSG_HASH(MENU_ENUM_LABEL_AUDIO_MIXER_MUTE,
+      "audio_mixer_mute_enable")
+MSG_HASH(MENU_ENUM_LABEL_MENU_SHOW_ONLINE_UPDATER,
+      "menu_show_online_updater")
+MSG_HASH(MENU_ENUM_LABEL_MENU_SHOW_CORE_UPDATER,
+      "menu_show_core_updater")

@@ -1299,7 +1299,36 @@ static int setting_action_right_bind_device(void *data, bool wraparound)
    return 0;
 }
 
+static int setting_action_left_mouse_index(void *data, bool wraparound)
+{
+   rarch_setting_t *setting = (rarch_setting_t*)data;
+   settings_t *settings     = config_get_ptr();
 
+   if (!setting)
+      return -1;
+
+   if (settings->uints.input_mouse_index[setting->index_offset])
+   {
+      --settings->uints.input_mouse_index[setting->index_offset];
+      settings->modified = true;
+   }
+
+   return 0;
+}
+
+static int setting_action_right_mouse_index(void *data, bool wraparound)
+{
+   rarch_setting_t *setting = (rarch_setting_t*)data;
+   settings_t *settings     = config_get_ptr();
+
+   if (!setting)
+      return -1;
+
+   ++settings->uints.input_mouse_index[setting->index_offset];
+   settings->modified = true;
+
+   return 0;
+}
 
 /**
  ******* ACTION OK CALLBACK FUNCTIONS *******
@@ -1686,7 +1715,10 @@ void general_write_handler(void *data)
          }
          break;
       case MENU_ENUM_LABEL_AUDIO_VOLUME:
-         audio_driver_set_volume_gain(db_to_gain(*setting->value.target.fraction));
+         audio_set_float(AUDIO_ACTION_VOLUME_GAIN, *setting->value.target.fraction);
+         break;
+      case MENU_ENUM_LABEL_AUDIO_MIXER_VOLUME:
+         audio_set_float(AUDIO_ACTION_MIXER_VOLUME_GAIN, *setting->value.target.fraction);
          break;
       case MENU_ENUM_LABEL_AUDIO_LATENCY:
       case MENU_ENUM_LABEL_AUDIO_DEVICE:
@@ -1918,6 +1950,7 @@ static bool setting_append_list_input_player_options(
       static char key_bind_all[MAX_USERS][64];
       static char key_bind_all_save_autoconfig[MAX_USERS][64];
       static char key_bind_defaults[MAX_USERS][64];
+      static char mouse_index[MAX_USERS][64];
 
       static char label[MAX_USERS][64];
       static char label_type[MAX_USERS][64];
@@ -1925,6 +1958,7 @@ static bool setting_append_list_input_player_options(
       static char label_bind_all[MAX_USERS][64];
       static char label_bind_all_save_autoconfig[MAX_USERS][64];
       static char label_bind_defaults[MAX_USERS][64];
+      static char label_mouse_index[MAX_USERS][64];
 
       tmp_string[0] = '\0';
 
@@ -1946,6 +1980,8 @@ static bool setting_append_list_input_player_options(
       fill_pathname_join_delim(key_bind_defaults[user],
             tmp_string, "bind_defaults", '_',
             sizeof(key_bind_defaults[user]));
+      fill_pathname_join_delim(mouse_index[user], tmp_string, "mouse_index", '_',
+            sizeof(mouse_index[user]));
 
       snprintf(label[user], sizeof(label[user]),
                "%s %u %s", msg_hash_to_str(MENU_ENUM_LABEL_VALUE_USER), user + 1,
@@ -1965,6 +2001,9 @@ static bool setting_append_list_input_player_options(
       snprintf(label_bind_all_save_autoconfig[user], sizeof(label_bind_all_save_autoconfig[user]),
                "%s %u %s", msg_hash_to_str(MENU_ENUM_LABEL_VALUE_USER), user + 1,
                msg_hash_to_str(MENU_ENUM_LABEL_VALUE_INPUT_SAVE_AUTOCONFIG));
+      snprintf(label_mouse_index[user], sizeof(label_mouse_index[user]),
+               "%s %u %s", msg_hash_to_str(MENU_ENUM_LABEL_VALUE_USER), user + 1,
+               msg_hash_to_str(MENU_ENUM_LABEL_VALUE_INPUT_MOUSE_INDEX));
 
       CONFIG_UINT_ALT(
             list, list_info,
@@ -2058,6 +2097,22 @@ static bool setting_append_list_input_player_options(
       (*list)[list_info->index - 1].index_offset   = user;
       (*list)[list_info->index - 1].action_ok      = &setting_action_ok_bind_all_save_autoconfig;
       (*list)[list_info->index - 1].action_cancel  = NULL;
+
+      CONFIG_UINT_ALT(
+            list, list_info,
+            &settings->uints.input_mouse_index[user],
+            mouse_index[user],
+            label_mouse_index[user],
+            0,
+            &group_info,
+            &subgroup_info,
+            parent_group,
+            general_write_handler,
+            general_read_handler);
+      (*list)[list_info->index - 1].index        = user + 1;
+      (*list)[list_info->index - 1].index_offset = user;
+      (*list)[list_info->index - 1].action_left  = &setting_action_left_mouse_index;
+      (*list)[list_info->index - 1].action_right = &setting_action_right_mouse_index;
    }
 
    for (i = 0; i < RARCH_BIND_LIST_END; i ++)
@@ -2279,6 +2334,15 @@ static bool setting_append_list(
                &subgroup_info,
                parent_group);
 
+#ifdef HAVE_LAKKA
+         CONFIG_ACTION(
+               list, list_info,
+               MENU_ENUM_LABEL_UPDATE_LAKKA,
+               MENU_ENUM_LABEL_VALUE_UPDATE_LAKKA,
+               &group_info,
+               &subgroup_info,
+               parent_group);
+#else
          CONFIG_ACTION(
                list, list_info,
                MENU_ENUM_LABEL_ONLINE_UPDATER,
@@ -2286,6 +2350,8 @@ static bool setting_append_list(
                &group_info,
                &subgroup_info,
                parent_group);
+#endif
+
 #endif
 
          CONFIG_ACTION(
@@ -2547,12 +2613,19 @@ static bool setting_append_list(
 
          CONFIG_ACTION(
                list, list_info,
+               MENU_ENUM_LABEL_MENU_VIEWS_SETTINGS,
+               MENU_ENUM_LABEL_VALUE_MENU_VIEWS_SETTINGS,
+               &group_info,
+               &subgroup_info,
+               parent_group);
+
+         CONFIG_ACTION(
+               list, list_info,
                MENU_ENUM_LABEL_USER_INTERFACE_SETTINGS,
                MENU_ENUM_LABEL_VALUE_USER_INTERFACE_SETTINGS,
                &group_info,
                &subgroup_info,
                parent_group);
-         settings_data_list_current_add_flags(list, list_info, SD_FLAG_LAKKA_ADVANCED);
 
          CONFIG_ACTION(
                list, list_info,
@@ -3802,12 +3875,42 @@ static bool setting_append_list(
                SD_FLAG_NONE
                );
 
+         CONFIG_BOOL(
+               list, list_info,
+               audio_get_bool_ptr(AUDIO_ACTION_MIXER_MUTE_ENABLE),
+               MENU_ENUM_LABEL_AUDIO_MIXER_MUTE,
+               MENU_ENUM_LABEL_VALUE_AUDIO_MIXER_MUTE,
+               false,
+               MENU_ENUM_LABEL_VALUE_OFF,
+               MENU_ENUM_LABEL_VALUE_ON,
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler,
+               SD_FLAG_NONE
+               );
+
          CONFIG_FLOAT(
                list, list_info,
                &settings->floats.audio_volume,
                MENU_ENUM_LABEL_AUDIO_VOLUME,
                MENU_ENUM_LABEL_VALUE_AUDIO_VOLUME,
                audio_volume,
+               "%.1f",
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler);
+         menu_settings_list_current_add_range(list, list_info, -80, 12, 1.0, true, true);
+
+         CONFIG_FLOAT(
+               list, list_info,
+               &settings->floats.audio_mixer_volume,
+               MENU_ENUM_LABEL_AUDIO_MIXER_VOLUME,
+               MENU_ENUM_LABEL_VALUE_AUDIO_MIXER_VOLUME,
+               audio_mixer_volume,
                "%.1f",
                &group_info,
                &subgroup_info,
@@ -5541,6 +5644,7 @@ static bool setting_append_list(
                general_write_handler,
                general_read_handler,
                SD_FLAG_NONE);
+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_LAKKA_ADVANCED);
 
 #if !defined(RARCH_MOBILE)
          CONFIG_BOOL(
@@ -5558,6 +5662,41 @@ static bool setting_append_list(
                general_read_handler,
                SD_FLAG_CMD_APPLY_AUTO);
          menu_settings_list_current_add_cmd(list, list_info, CMD_EVENT_REINIT);
+         settings_data_list_current_add_flags(list, list_info, SD_FLAG_LAKKA_ADVANCED);
+#endif
+
+#if defined(HAVE_NETWORKING)
+#ifndef HAVE_LAKKA
+         CONFIG_BOOL(
+               list, list_info,
+               &settings->bools.menu_show_online_updater,
+               MENU_ENUM_LABEL_MENU_SHOW_ONLINE_UPDATER,
+               MENU_ENUM_LABEL_VALUE_MENU_SHOW_ONLINE_UPDATER,
+               menu_show_online_updater,
+               MENU_ENUM_LABEL_VALUE_OFF,
+               MENU_ENUM_LABEL_VALUE_ON,
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler,
+               SD_FLAG_NONE);
+
+         CONFIG_BOOL(
+               list, list_info,
+               &settings->bools.menu_show_core_updater,
+               MENU_ENUM_LABEL_MENU_SHOW_CORE_UPDATER,
+               MENU_ENUM_LABEL_VALUE_MENU_SHOW_CORE_UPDATER,
+               menu_show_online_updater,
+               MENU_ENUM_LABEL_VALUE_OFF,
+               MENU_ENUM_LABEL_VALUE_ON,
+               &group_info,
+               &subgroup_info,
+               parent_group,
+               general_write_handler,
+               general_read_handler,
+               SD_FLAG_NONE);
+#endif
 #endif
 
          if (string_is_not_equal_fast(ui_companion_driver_get_ident(), "null", 4))

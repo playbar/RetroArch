@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 
 RARCH_DIR := ../../../..
 
-HAVE_NEON   := 0
+HAVE_NEON   := 1
 HAVE_LOGGER := 0
 HAVE_VULKAN := 1
 
@@ -34,12 +34,16 @@ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 ifeq ($(HAVE_NEON),1)
 	DEFINES += -D__ARM_NEON__
    LOCAL_SRC_FILES += $(LIBRETRO_COMM_DIR)/audio/conversion/s16_to_float_neon.S.neon \
-					  $(LIBRETRO_COMM_DIR)/audio/conversion/float_to_s16_neon.S.neon \
-					  $(LIBRETRO_COMM_DIR)/audio/resampler/drivers/sinc_resampler_neon.S.neon \
-					  $(RARCH_DIR)/audio/drivers_resampler/cc_resampler_neon.S.neon
+							 $(LIBRETRO_COMM_DIR)/audio/conversion/float_to_s16_neon.S.neon \
+							 $(LIBRETRO_COMM_DIR)/audio/resampler/drivers/sinc_resampler_neon.S.neon \
+							 $(RARCH_DIR)/audio/drivers_resampler/cc_resampler_neon.S.neon
 endif
-DEFINES += -DSINC_LOWER_QUALITY
+DEFINES += -DSINC_LOWER_QUALITY 
 DEFINES += -DANDROID_ARM_V7
+endif
+
+ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
+   DEFINES += -DANDROID_AARCH64
 endif
 
 ifeq ($(TARGET_ARCH),mips)
@@ -48,10 +52,8 @@ endif
 
 LOCAL_MODULE := retroarch-activity
 
-LOCAL_SRC_FILES  +=	\
-                    $(RARCH_DIR)/griffin/griffin1.c \
-					$(RARCH_DIR)/griffin/griffin_cpp.cpp \
-
+LOCAL_SRC_FILES  +=	$(RARCH_DIR)/griffin/griffin.c \
+							$(RARCH_DIR)/griffin/griffin_cpp.cpp
 
 ifeq ($(HAVE_LOGGER), 1)
    DEFINES += -DHAVE_LOGGER
@@ -66,13 +68,8 @@ else
    DEFINES += -DHAVE_OPENGLES2
 endif
 
-DEFINES += -DRARCH_MOBILE -DHAVE_GRIFFIN -DHAVE_STB_VORBIS -DHAVE_LANGEXTRA -DANDROID -DHAVE_DYNAMIC -DHAVE_OPENGL -DHAVE_FBO -DHAVE_OVERLAY
-DEFINES += -DHAVE_OPENGLES -DGLSL_DEBUG -DHAVE_DYLIB -DHAVE_EGL -DHAVE_GLSL -DHAVE_MENU -DHAVE_RGUI -DHAVE_ZLIB -DHAVE_RPNG -DHAVE_RJPEG
-DEFINES += -DHAVE_RBMP -DHAVE_RTGA -DINLINE=inline -DHAVE_THREADS -D__LIBRETRO__ -DHAVE_RSOUND -DHAVE_NETWORKGAMEPAD -DHAVE_NETWORKING
-DEFINES += -DRARCH_INTERNAL -DHAVE_FILTERS_BUILTIN -DHAVE_MATERIALUI -DHAVE_XMB -DHAVE_SHADERPIPELINE -DHAVE_LIBRETRODB -DHAVE_STB_FONT
-DEFINES += -DHAVE_IMAGEVIEWER -DHAVE_UPDATE_ASSETS -DHAVE_CC_RESAMPLER -DHAVE_MINIUPNPC -DHAVE_BUILTINMINIUPNPC
-DEFINES += -DMINIUPNPC_SET_SOCKET_TIMEOUT -DMINIUPNPC_GET_SRC_ADDR
-DEFINES += -DWANT_IFADDRS -DHAVE_SHADERS -DHAVE_COMPRESSION -DJSON_STATIC
+DEFINES += -DRARCH_MOBILE -DHAVE_GRIFFIN -DHAVE_STB_VORBIS -DHAVE_LANGEXTRA -DANDROID -DHAVE_DYNAMIC -DHAVE_OPENGL -DHAVE_FBO -DHAVE_OVERLAY -DHAVE_OPENGLES -DGLSL_DEBUG -DHAVE_DYLIB -DHAVE_EGL -DHAVE_GLSL -DHAVE_MENU -DHAVE_RGUI -DHAVE_ZLIB -DHAVE_RPNG -DHAVE_RJPEG -DHAVE_RBMP -DHAVE_RTGA -DINLINE=inline -DHAVE_THREADS -D__LIBRETRO__ -DHAVE_RSOUND -DHAVE_NETWORKGAMEPAD -DHAVE_NETWORKING -DRARCH_INTERNAL -DHAVE_FILTERS_BUILTIN -DHAVE_MATERIALUI -DHAVE_XMB -DHAVE_SHADERPIPELINE -DHAVE_LIBRETRODB -DHAVE_STB_FONT -DHAVE_IMAGEVIEWER -DHAVE_UPDATE_ASSETS -DHAVE_CC_RESAMPLER -DHAVE_MINIUPNPC -DHAVE_BUILTINMINIUPNPC -DMINIUPNPC_SET_SOCKET_TIMEOUT -DMINIUPNPC_GET_SRC_ADDR
+DEFINES += -DWANT_IFADDRS
 
 ifeq ($(HAVE_VULKAN),1)
 DEFINES += -DHAVE_VULKAN
@@ -82,12 +79,12 @@ DEFINES += -DHAVE_CHEEVOS
 DEFINES += -DHAVE_SL
 
 LOCAL_CFLAGS   += -Wall -std=gnu99 -pthread -Wno-unused-function -fno-stack-protector -funroll-loops $(DEFINES)
-LOCAL_CPPFLAGS := -fexceptions -fpermissive -std=c++11 -fno-rtti -Wno-reorder $(DEFINES)
+LOCAL_CPPFLAGS := -fexceptions -fpermissive -std=gnu++11 -fno-rtti -Wno-reorder $(DEFINES)
 
 # Let ndk-build set the optimization flags but remove -O3 like in cf3c3
 LOCAL_CFLAGS := $(subst -O3,-O2,$(LOCAL_CFLAGS))
 
-LOCAL_LDLIBS	:= -L$(SYSROOT)/usr/lib -landroid -lEGL $(GLES_LIB) $(LOGGER_LDLIBS) -ldl
+LOCAL_LDLIBS	:= -L$(SYSROOT)/usr/lib -landroid -lEGL $(GLES_LIB) $(LOGGER_LDLIBS) -ldl 
 LOCAL_C_INCLUDES := \
 							$(LOCAL_PATH)/$(RARCH_DIR)/libretro-common/include/ \
 							$(LOCAL_PATH)/$(RARCH_DIR)/deps
@@ -95,7 +92,7 @@ LOCAL_C_INCLUDES := \
 
 ifeq ($(HAVE_VULKAN),1)
 INCFLAGS         += $(LOCAL_PATH)/$(RARCH_DIR)/gfx/include
-
+						  
 LOCAL_C_INCLUDES += $(INCFLAGS)
 LOCAL_CPPFLAGS   += -I$(LOCAL_PATH)/$(DEPS_DIR)/glslang \
 						  -I$(LOCAL_PATH)/$(DEPS_DIR)/glslang/glslang/glslang/Public \
@@ -106,52 +103,52 @@ LOCAL_CPPFLAGS   += -I$(LOCAL_PATH)/$(DEPS_DIR)/glslang \
 
 LOCAL_CFLAGS    += -Wno-sign-compare -Wno-unused-variable -Wno-parentheses
 LOCAL_SRC_FILES += $(DEPS_DIR)/glslang/glslang.cpp \
-                 $(DEPS_DIR)/glslang/glslang/SPIRV/SpvBuilder.cpp \
-                 $(DEPS_DIR)/glslang/glslang/SPIRV/Logger.cpp \
-                 $(DEPS_DIR)/glslang/glslang/SPIRV/SPVRemapper.cpp \
-                 $(DEPS_DIR)/glslang/glslang/SPIRV/InReadableOrder.cpp \
-                 $(DEPS_DIR)/glslang/glslang/SPIRV/doc.cpp \
-                 $(DEPS_DIR)/glslang/glslang/SPIRV/GlslangToSpv.cpp \
-                 $(DEPS_DIR)/glslang/glslang/SPIRV/disassemble.cpp \
-                 $(DEPS_DIR)/glslang/glslang/OGLCompilersDLL/InitializeDll.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/GenericCodeGen/Link.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/GenericCodeGen/CodeGen.cpp \
-                 $(DEPS_DIR)/glslang/glslang/hlsl/hlslAttributes.cpp \
-                 $(DEPS_DIR)/glslang/glslang/hlsl/hlslGrammar.cpp \
-                 $(DEPS_DIR)/glslang/glslang/hlsl/hlslOpMap.cpp \
-                 $(DEPS_DIR)/glslang/glslang/hlsl/hlslTokenStream.cpp \
-                 $(DEPS_DIR)/glslang/glslang/hlsl/hlslScanContext.cpp \
-                 $(DEPS_DIR)/glslang/glslang/hlsl/hlslParseHelper.cpp \
-                 $(DEPS_DIR)/glslang/glslang/hlsl/hlslParseables.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Intermediate.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/propagateNoContraction.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/glslang_tab.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Versions.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/RemoveTree.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/limits.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/intermOut.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Initialize.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/SymbolTable.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/parseConst.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/ParseContextBase.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/ParseHelper.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/ShaderLang.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/IntermTraverse.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/iomapper.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/InfoSink.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Constant.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Scan.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/reflection.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/linkValidate.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/PoolAlloc.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpAtom.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpContext.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpMemory.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpTokens.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpScanner.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpSymbols.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/Pp.cpp \
-                 $(DEPS_DIR)/glslang/glslang/glslang/OSDependent/Unix/ossource.cpp
+						 $(DEPS_DIR)/glslang/glslang/SPIRV/SpvBuilder.cpp \
+						 $(DEPS_DIR)/glslang/glslang/SPIRV/Logger.cpp \
+						 $(DEPS_DIR)/glslang/glslang/SPIRV/SPVRemapper.cpp \
+						 $(DEPS_DIR)/glslang/glslang/SPIRV/InReadableOrder.cpp \
+						 $(DEPS_DIR)/glslang/glslang/SPIRV/doc.cpp \
+						 $(DEPS_DIR)/glslang/glslang/SPIRV/GlslangToSpv.cpp \
+						 $(DEPS_DIR)/glslang/glslang/SPIRV/disassemble.cpp \
+						 $(DEPS_DIR)/glslang/glslang/OGLCompilersDLL/InitializeDll.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/GenericCodeGen/Link.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/GenericCodeGen/CodeGen.cpp \
+						 $(DEPS_DIR)/glslang/glslang/hlsl/hlslAttributes.cpp \
+						 $(DEPS_DIR)/glslang/glslang/hlsl/hlslGrammar.cpp \
+						 $(DEPS_DIR)/glslang/glslang/hlsl/hlslOpMap.cpp \
+						 $(DEPS_DIR)/glslang/glslang/hlsl/hlslTokenStream.cpp \
+						 $(DEPS_DIR)/glslang/glslang/hlsl/hlslScanContext.cpp \
+						 $(DEPS_DIR)/glslang/glslang/hlsl/hlslParseHelper.cpp \
+						 $(DEPS_DIR)/glslang/glslang/hlsl/hlslParseables.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Intermediate.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/propagateNoContraction.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/glslang_tab.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Versions.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/RemoveTree.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/limits.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/intermOut.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Initialize.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/SymbolTable.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/parseConst.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/ParseContextBase.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/ParseHelper.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/ShaderLang.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/IntermTraverse.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/iomapper.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/InfoSink.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Constant.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/Scan.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/reflection.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/linkValidate.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/PoolAlloc.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpAtom.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpContext.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpMemory.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpTokens.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpScanner.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/PpSymbols.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/MachineIndependent/preprocessor/Pp.cpp \
+						 $(DEPS_DIR)/glslang/glslang/glslang/OSDependent/Unix/ossource.cpp
 endif
 
 LOCAL_LDLIBS += -lOpenSLES -lz

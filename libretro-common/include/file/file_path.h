@@ -457,6 +457,22 @@ void fill_pathname_application_path(char *buf, size_t size);
  **/
 bool path_mkdir(const char *dir);
 
+/**
+ * path_is_directory:
+ * @path               : path
+ *
+ * Checks if path is a directory.
+ *
+ * Returns: true (1) if path is a directory, otherwise false (0).
+ */
+bool path_is_directory(const char *path);
+
+bool path_is_character_special(const char *path);
+
+bool path_is_valid(const char *path);
+
+int32_t path_get_size(const char *path);
+
 RETRO_END_DECLS
 
 #endif

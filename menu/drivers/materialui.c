@@ -1845,8 +1845,19 @@ static int mui_list_push(void *data, void *userdata,
             menu_displaylist_ctl(DISPLAYLIST_SETTING_ENUM, &entry);
 
 #if defined(HAVE_NETWORKING)
-            entry.enum_idx      = MENU_ENUM_LABEL_ONLINE_UPDATER;
+#ifdef HAVE_LAKKA
+            entry.enum_idx      = MENU_ENUM_LABEL_UPDATE_LAKKA;
             menu_displaylist_ctl(DISPLAYLIST_SETTING_ENUM, &entry);
+#else
+            {
+               settings_t *settings      = config_get_ptr();
+               if (settings->bools.menu_show_online_updater)
+               {
+                  entry.enum_idx      = MENU_ENUM_LABEL_ONLINE_UPDATER;
+                  menu_displaylist_ctl(DISPLAYLIST_SETTING_ENUM, &entry);
+               }
+            }
+#endif
 
             entry.enum_idx      = MENU_ENUM_LABEL_NETPLAY;
             menu_displaylist_ctl(DISPLAYLIST_SETTING_ENUM, &entry);

@@ -2579,10 +2579,10 @@ static void xmb_draw_bg(
          draw.texture = texture;
          menu_display_set_alpha(draw.color, coord_white[3]);
 
-         if (!running && draw.texture)
+         if (draw.texture)
             draw.color = &coord_white[0];
 
-         if (video_info->xmb_color_theme == XMB_THEME_WALLPAPER)
+         if (running || video_info->xmb_color_theme == XMB_THEME_WALLPAPER)
             add_opacity = true;
 
          menu_display_draw_bg(&draw, video_info, add_opacity);
@@ -4066,8 +4066,19 @@ static int xmb_list_push(void *data, void *userdata,
             entry.enum_idx      = MENU_ENUM_LABEL_ADD_CONTENT_LIST;
             menu_displaylist_ctl(DISPLAYLIST_SETTING_ENUM, &entry);
 #if defined(HAVE_NETWORKING)
-            entry.enum_idx      = MENU_ENUM_LABEL_ONLINE_UPDATER;
+#ifdef HAVE_LAKKA
+            entry.enum_idx      = MENU_ENUM_LABEL_UPDATE_LAKKA;
             menu_displaylist_ctl(DISPLAYLIST_SETTING_ENUM, &entry);
+#else
+            {
+               settings_t *settings      = config_get_ptr();
+               if (settings->bools.menu_show_online_updater)
+               {
+                  entry.enum_idx      = MENU_ENUM_LABEL_ONLINE_UPDATER;
+                  menu_displaylist_ctl(DISPLAYLIST_SETTING_ENUM, &entry);
+               }
+            }
+#endif
 #endif
             entry.enum_idx      = MENU_ENUM_LABEL_INFORMATION_LIST;
             menu_displaylist_ctl(DISPLAYLIST_SETTING_ENUM, &entry);

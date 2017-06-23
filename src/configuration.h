@@ -29,6 +29,7 @@
 #include "config.h"
 #endif
 
+#include "gfx/video_driver.h"
 #include "input/input_defines.h"
 
 enum override_type
@@ -118,6 +119,8 @@ typedef struct settings
       bool menu_show_advanced_settings;
       bool menu_throttle_framerate;
       bool menu_linear_filter;
+      bool menu_show_online_updater;
+      bool menu_show_core_updater;
       bool menu_xmb_shadows_enable;
       bool menu_xmb_show_settings;
       bool menu_xmb_show_images;
@@ -231,6 +234,7 @@ typedef struct settings
 
       float audio_max_timing_skew;
       float audio_volume; /* dB scale. */
+      float audio_mixer_volume; /* dB scale. */
 
       float input_overlay_opacity;
       float input_overlay_scale;
@@ -267,6 +271,7 @@ typedef struct settings
 
       unsigned input_joypad_map[MAX_USERS];
       unsigned input_device[MAX_USERS];
+      unsigned input_mouse_index[MAX_USERS];
 
       unsigned input_turbo_period;
       unsigned input_turbo_duty_cycle;
@@ -407,6 +412,8 @@ typedef struct settings
    } paths;
 
    bool modified;
+
+   video_viewport_t video_viewport_custom;
 
    size_t rewind_buffer_size;
 } settings_t;

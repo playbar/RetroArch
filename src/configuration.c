@@ -22,7 +22,6 @@
 #include <file/file_path.h>
 #include <compat/strl.h>
 #include <compat/posix_string.h>
-#include <retro_stat.h>
 #include <retro_assert.h>
 #include <string/stdstring.h>
 
@@ -36,6 +35,7 @@
 #include "configuration.h"
 #include "content.h"
 #include "config.def.h"
+#include "config.features.h"
 #include "input/input_config.h"
 #include "input/input_keymaps.h"
 #include "input/input_remapping.h"
@@ -1153,6 +1153,7 @@ static struct config_bool_setting *populate_settings_bool(settings_t *settings, 
    SETTING_BOOL("core_set_supports_no_game_enable", &settings->bools.set_supports_no_game_enable, true, true, false);
    SETTING_BOOL("audio_enable",                  &settings->bools.audio_enable, true, audio_enable, false);
    SETTING_BOOL("audio_mute_enable",             audio_get_bool_ptr(AUDIO_ACTION_MUTE_ENABLE), true, false, false);
+   SETTING_BOOL("audio_mixer_mute_enable",       audio_get_bool_ptr(AUDIO_ACTION_MIXER_MUTE_ENABLE), true, false, false);
    SETTING_BOOL("location_allow",                &settings->bools.location_allow, true, false, false);
    SETTING_BOOL("video_font_enable",             &settings->bools.video_font_enable, true, font_enable, false);
    SETTING_BOOL("core_updater_auto_extract_archive", &settings->bools.network_buildbot_auto_extract_archive, true, true, false);
@@ -1189,6 +1190,8 @@ static struct config_bool_setting *populate_settings_bool(settings_t *settings, 
    SETTING_BOOL("xmb_show_images",               &settings->bools.menu_xmb_show_images, true, xmb_show_images, false);
 #endif
    SETTING_BOOL("xmb_show_music",                &settings->bools.menu_xmb_show_music, true, xmb_show_music, false);
+   SETTING_BOOL("menu_show_online_updater",      &settings->bools.menu_show_online_updater, true, menu_show_online_updater, false);
+   SETTING_BOOL("menu_show_core_updater",        &settings->bools.menu_show_core_updater, true, menu_show_core_updater, false);
 #ifdef HAVE_FFMPEG
    SETTING_BOOL("xmb_show_video",                &settings->bools.menu_xmb_show_video, true, xmb_show_video, false);
 #endif
@@ -1270,6 +1273,7 @@ static struct config_float_setting *populate_settings_float(settings_t *settings
    SETTING_FLOAT("audio_rate_control_delta", audio_get_float_ptr(AUDIO_ACTION_RATE_CONTROL_DELTA), true, rate_control_delta, false);
    SETTING_FLOAT("audio_max_timing_skew",    &settings->floats.audio_max_timing_skew, true, max_timing_skew, false);
    SETTING_FLOAT("audio_volume",             &settings->floats.audio_volume, true, audio_volume, false);
+   SETTING_FLOAT("audio_mixer_volume",       &settings->floats.audio_mixer_volume, true, audio_mixer_volume, false);
 #ifdef HAVE_OVERLAY
    SETTING_FLOAT("input_overlay_opacity",    &settings->floats.input_overlay_opacity, true, 0.7f, false);
    SETTING_FLOAT("input_overlay_scale",      &settings->floats.input_overlay_scale, true, 1.0f, false);
@@ -1294,7 +1298,6 @@ static struct config_float_setting *populate_settings_float(settings_t *settings
 static struct config_uint_setting *populate_settings_uint(settings_t *settings, int *size)
 {
    unsigned count                     = 0;
-   struct video_viewport *custom_vp   = video_viewport_get_custom();
    struct config_uint_setting  *tmp   = (struct config_uint_setting*)malloc((*size + 1) * sizeof(struct config_uint_setting));
 
    SETTING_UINT("input_bind_timeout",           &settings->uints.input_bind_timeout,     true, input_bind_timeout, false);
@@ -1336,10 +1339,10 @@ static struct config_uint_setting *populate_settings_uint(settings_t *settings, 
    SETTING_UINT("menu_shader_pipeline",         &settings->uints.menu_xmb_shader_pipeline, true, menu_shader_pipeline, false);
 #endif
    SETTING_UINT("audio_out_rate",               &settings->uints.audio_out_rate, true, out_rate, false);
-   SETTING_UINT("custom_viewport_width",        &custom_vp->width, false, 0 /* TODO */, false);
-   SETTING_UINT("custom_viewport_height",       &custom_vp->height, false, 0 /* TODO */, false);
-   SETTING_UINT("custom_viewport_x",            (unsigned*)&custom_vp->x, false, 0 /* TODO */, false);
-   SETTING_UINT("custom_viewport_y",            (unsigned*)&custom_vp->y, false, 0 /* TODO */, false);
+   SETTING_UINT("custom_viewport_width",        &settings->video_viewport_custom.width, false, 0 /* TODO */, false);
+   SETTING_UINT("custom_viewport_height",       &settings->video_viewport_custom.height, false, 0 /* TODO */, false);
+   SETTING_UINT("custom_viewport_x",            (unsigned*)&settings->video_viewport_custom.x, false, 0 /* TODO */, false);
+   SETTING_UINT("custom_viewport_y",            (unsigned*)&settings->video_viewport_custom.y, false, 0 /* TODO */, false);
    SETTING_UINT("content_history_size",         &settings->uints.content_history_size,   true, default_content_history_size, false);
    SETTING_UINT("video_hard_sync_frames",       &settings->uints.video_hard_sync_frames, true, hard_sync_frames, false);
    SETTING_UINT("video_frame_delay",            &settings->uints.video_frame_delay,      true, frame_delay, false);
@@ -1531,7 +1534,8 @@ static void config_set_defaults(void)
 
    settings->uints.audio_latency               = g_defaults.settings.out_latency;
 
-   audio_driver_set_volume_gain(db_to_gain(settings->floats.audio_volume));
+   audio_set_float(AUDIO_ACTION_VOLUME_GAIN, settings->floats.audio_volume);
+   audio_set_float(AUDIO_ACTION_MIXER_VOLUME_GAIN, settings->floats.audio_mixer_volume);
 
    settings->rewind_buffer_size                = rewind_buffer_size;
 
@@ -1582,6 +1586,7 @@ static void config_set_defaults(void)
       settings->uints.input_analog_dpad_mode[i] = ANALOG_DPAD_NONE;
       if (!retroarch_override_setting_is_set(RARCH_OVERRIDE_SETTING_LIBRETRO_DEVICE, &i))
          input_config_set_device(i, RETRO_DEVICE_JOYPAD);
+      settings->uints.input_mouse_index[i] = 0;
    }
 
    video_driver_reset_custom_viewport();
@@ -1955,13 +1960,10 @@ static config_file_t *open_default_config_file(void)
 
          skeleton_conf[0] = '\0';
 
-#if defined(__HAIKU__)
-         fill_pathname_join(skeleton_conf, "/system/settings",
-               file_path_str(FILE_PATH_MAIN_CONFIG), sizeof(skeleton_conf));
-#else
-         fill_pathname_join(skeleton_conf, "/etc",
-               file_path_str(FILE_PATH_MAIN_CONFIG), sizeof(skeleton_conf));
-#endif
+         // Build a retroarch.cfg path from the global config directory (/etc).
+         fill_pathname_join(skeleton_conf, GLOBAL_CONFIG_DIR,
+            file_path_str(FILE_PATH_MAIN_CONFIG), sizeof(skeleton_conf));
+
          conf = config_file_new(skeleton_conf);
          if (conf)
             RARCH_WARN("Config: using skeleton config \"%s\" as base for a new config file.\n", skeleton_conf);
@@ -2339,6 +2341,9 @@ static bool config_load_file(const char *path, bool set_defaults,
       snprintf(buf, sizeof(buf), "input_player%u_analog_dpad_mode", i + 1);
       CONFIG_GET_INT_BASE(conf, settings, uints.input_analog_dpad_mode[i], buf);
 
+      snprintf(buf, sizeof(buf), "input_player%u_mouse_index", i + 1);
+      CONFIG_GET_INT_BASE(conf, settings, uints.input_mouse_index[i], buf);
+
       if (!retroarch_override_setting_is_set(RARCH_OVERRIDE_SETTING_LIBRETRO_DEVICE, &i))
       {
          snprintf(buf, sizeof(buf), "input_libretro_device_p%u", i + 1);
@@ -2440,7 +2445,8 @@ static bool config_load_file(const char *path, bool set_defaults,
    settings->uints.video_swap_interval = MAX(settings->uints.video_swap_interval, 1);
    settings->uints.video_swap_interval = MIN(settings->uints.video_swap_interval, 4);
 
-   audio_driver_set_volume_gain(db_to_gain(settings->floats.audio_volume));
+   audio_set_float(AUDIO_ACTION_VOLUME_GAIN, settings->floats.audio_volume);
+   audio_set_float(AUDIO_ACTION_MIXER_VOLUME_GAIN, settings->floats.audio_mixer_volume);
 
    if (string_is_empty(settings->paths.path_content_history))
    {
@@ -3492,6 +3498,8 @@ bool config_save_file(const char *path)
       config_set_int(conf, cfg, input_config_get_device(i));
       snprintf(cfg, sizeof(cfg), "input_player%u_analog_dpad_mode", i + 1);
       config_set_int(conf, cfg, settings->uints.input_analog_dpad_mode[i]);
+      snprintf(cfg, sizeof(cfg), "input_player%u_mouse_index", i + 1);
+      config_set_int(conf, cfg, settings->uints.input_mouse_index[i]);
    }
 
    /* Boolean settings */

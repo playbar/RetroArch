@@ -9,17 +9,17 @@ android {
         targetSdkVersion 24
         versionCode 55
         versionName "1.0"
-//        ndk{
-//            abiFilters 'armeabi-v7a'
-//        }
-        externalNativeBuild {
-            cmake {
-                abiFilters 'armeabi-v7a'
-                arguments "-DANDROID_STL=c++_static",
-                        "-DANDROID_TOOLCHAIN=clang",
-                        '-DANDROID_PLATFORM=android-23'
-            }
+        ndk{
+            abiFilters 'armeabi-v7a'
         }
+//        externalNativeBuild {
+//            cmake {
+//                abiFilters 'armeabi-v7a'
+//                arguments "-DANDROID_STL=c++_static",
+//                        "-DANDROID_TOOLCHAIN=clang",
+//                        '-DANDROID_PLATFORM=android-23'
+//            }
+//        }
     }
     buildTypes {
         release {
@@ -28,13 +28,13 @@ android {
         }
     }
     externalNativeBuild {
-//        ndkBuild {
-//            path "src/main/jni/Android.mk"
-//        }
-
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
+        ndkBuild {
+            path "src/main/jni/Android.mk"
         }
+
+//        cmake {
+//            path "src/main/cpp/CMakeLists.txt"
+//        }
     }
 
 }
