@@ -31,9 +31,43 @@
 #define PLAYLIST_ENTRIES 6
 #endif
 
+struct playlist_entry
+{
+   char *path;
+   char *label;
+   char *core_path;
+   char *core_name;
+   char *db_name;
+   char *crc32;
+};
+
+struct content_playlist
+{
+   struct playlist_entry *entries;
+   size_t size;
+   size_t cap;
+   bool modified;
+
+   char *conf_path;
+};
+
 typedef int (playlist_sort_fun_t)(
       const struct playlist_entry *a,
       const struct playlist_entry *b);
+
+uint32_t playlist_get_size(playlist_t *playlist)
+{
+   if (!playlist)
+      return 0;
+   return (uint32_t)playlist->size;
+}
+
+char *playlist_get_conf_path(playlist_t *playlist)
+{
+   if (!playlist)
+      return NULL;
+   return playlist->conf_path;
+}
 
 /**
  * playlist_get_index:
@@ -187,7 +221,6 @@ void playlist_update(playlist_t *playlist, size_t idx,
    {
       if (entry->path != NULL)
          free(entry->path);
-      entry->path        = NULL;
       entry->path        = strdup(path);
       playlist->modified = true;
    }
@@ -196,7 +229,6 @@ void playlist_update(playlist_t *playlist, size_t idx,
    {
       if (entry->label != NULL)
          free(entry->label);
-      entry->label       = NULL;
       entry->label       = strdup(label);
       playlist->modified = true;
    }
@@ -214,7 +246,6 @@ void playlist_update(playlist_t *playlist, size_t idx,
    {
       if (entry->core_name != NULL)
          free(entry->core_name);
-      entry->core_name   = NULL;
       entry->core_name   = strdup(core_name);
       playlist->modified = true;
    }
@@ -223,7 +254,6 @@ void playlist_update(playlist_t *playlist, size_t idx,
    {
       if (entry->db_name != NULL)
          free(entry->db_name);
-      entry->db_name     = NULL;
       entry->db_name     = strdup(db_name);
       playlist->modified = true;
    }
@@ -232,7 +262,6 @@ void playlist_update(playlist_t *playlist, size_t idx,
    {
       if (entry->crc32 != NULL)
          free(entry->crc32);
-      entry->crc32       = NULL;
       entry->crc32       = strdup(crc32);
       playlist->modified = true;
    }
@@ -394,7 +423,7 @@ void playlist_free(playlist_t *playlist)
    if (!playlist)
       return;
 
-   if (playlist->conf_path)
+   if (playlist->conf_path != NULL)
       free(playlist->conf_path);
 
    playlist->conf_path = NULL;

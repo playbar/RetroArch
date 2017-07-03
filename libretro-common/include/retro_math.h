@@ -1,7 +1,7 @@
 /* Copyright  (C) 2010-2017 The RetroArch team
  *
  * ---------------------------------------------------------------------------------------
- * The following license statement only applies to this file (compat_strl.c).
+ * The following license statement only applies to this file (retro_math.h).
  * ---------------------------------------------------------------------------------------
  *
  * Permission is hereby granted, free of charge,
@@ -20,43 +20,75 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <ctype.h>
+#ifndef _LIBRETRO_COMMON_MATH_H
+#define _LIBRETRO_COMMON_MATH_H
 
-#include <compat/strl.h>
-#include <compat/posix_string.h>
+#include <stdint.h>
 
-/* Implementation of strlcpy()/strlcat() based on OpenBSD. */
+#if defined(_WIN32) && !defined(_XBOX)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#elif defined(_WIN32) && defined(_XBOX)
+#include <Xtl.h>
+#endif
 
-#ifndef __MACH__
+#include <limits.h>
 
-size_t strlcpy(char *dest, const char *source, size_t size)
+#ifdef _MSC_VER
+#include <compat/msvc.h>
+#endif
+#include <retro_inline.h>
+
+#ifndef M_PI
+#if !defined(_MSC_VER) && !defined(USE_MATH_DEFINES)
+#define M_PI 3.14159265358979323846264338327
+#endif
+#endif
+
+#ifndef MAX
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
+
+#ifndef MIN
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+/**
+ * next_pow2:
+ * @v         : initial value
+ *
+ * Get next power of 2 value based on  initial value.
+ *
+ * Returns: next power of 2 value (derived from @v).
+ **/
+static INLINE uint32_t next_pow2(uint32_t v)
 {
-   size_t src_size = 0;
-   size_t        n = size;
-
-   if (n)
-      while (--n && (*dest++ = *source++)) src_size++;
-
-   if (!n)
-   {
-      if (size) *dest = '\0';
-      while (*source++) src_size++;
-   }
-
-   return src_size;
+   v--;
+   v |= v >> 1;
+   v |= v >> 2;
+   v |= v >> 4;
+   v |= v >> 8;
+   v |= v >> 16;
+   v++;
+   return v;
 }
 
-size_t strlcat(char *dest, const char *source, size_t size)
+/**
+ * prev_pow2:
+ * @v         : initial value
+ *
+ * Get previous power of 2 value based on initial value.
+ *
+ * Returns: previous power of 2 value (derived from @v).
+ **/
+static INLINE uint32_t prev_pow2(uint32_t v)
 {
-   size_t len = strlen(dest);
-
-   dest += len;
-
-   if (len > size)
-      size = 0;
-   else
-      size -= len;
-
-   return len + strlcpy(dest, source, size);
+   v |= v >> 1;
+   v |= v >> 2;
+   v |= v >> 4;
+   v |= v >> 8;
+   v |= v >> 16;
+   return v - (v >> 1);
 }
+
 #endif

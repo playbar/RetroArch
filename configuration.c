@@ -139,6 +139,7 @@ enum audio_driver_enum
    AUDIO_OSS,
    AUDIO_ALSA,
    AUDIO_ALSATHREAD,
+   AUDIO_TINYALSA,
    AUDIO_ROAR,
    AUDIO_AL,
    AUDIO_SL,
@@ -312,6 +313,8 @@ static enum audio_driver_enum AUDIO_DEFAULT_DRIVER = AUDIO_PULSE;
 static enum audio_driver_enum AUDIO_DEFAULT_DRIVER = AUDIO_ALSATHREAD;
 #elif defined(HAVE_ALSA)
 static enum audio_driver_enum AUDIO_DEFAULT_DRIVER = AUDIO_ALSA;
+#elif defined(HAVE_TINYALSA)
+static enum audio_driver_enum AUDIO_DEFAULT_DRIVER = AUDIO_TINYALSA;
 #elif defined(HAVE_OSS)
 static enum audio_driver_enum AUDIO_DEFAULT_DRIVER = AUDIO_OSS;
 #elif defined(HAVE_JACK)
@@ -546,6 +549,8 @@ const char *config_get_default_audio(void)
          return "alsa";
       case AUDIO_ALSATHREAD:
          return "alsathread";
+      case AUDIO_TINYALSA:
+         return "tinyalsa";
       case AUDIO_ROAR:
          return "roar";
       case AUDIO_COREAUDIO:
@@ -1214,6 +1219,7 @@ static struct config_bool_setting *populate_settings_bool(settings_t *settings, 
    SETTING_BOOL("cheevos_enable",               &settings->bools.cheevos_enable, true, cheevos_enable, false);
    SETTING_BOOL("cheevos_test_unofficial",      &settings->bools.cheevos_test_unofficial, true, false, false);
    SETTING_BOOL("cheevos_hardcore_mode_enable", &settings->bools.cheevos_hardcore_mode_enable, true, false, false);
+   SETTING_BOOL("cheevos_verbose_enable",       &settings->bools.cheevos_verbose_enable, true, false, false);
 #endif
 #ifdef HAVE_OVERLAY
    SETTING_BOOL("input_overlay_enable",         &settings->bools.input_overlay_enable, true, config_overlay_enable_default(), false);
@@ -1960,7 +1966,7 @@ static config_file_t *open_default_config_file(void)
 
          skeleton_conf[0] = '\0';
 
-         // Build a retroarch.cfg path from the global config directory (/etc).
+         /* Build a retroarch.cfg path from the global config directory (/etc). */
          fill_pathname_join(skeleton_conf, GLOBAL_CONFIG_DIR,
             file_path_str(FILE_PATH_MAIN_CONFIG), sizeof(skeleton_conf));
 
@@ -3125,7 +3131,6 @@ static void save_keybind_hat(config_file_t *conf, const char *key,
          break;
 
       default:
-         retro_assert(0);
          break;
    }
 

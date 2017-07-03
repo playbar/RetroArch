@@ -36,6 +36,7 @@
 #include <boolean.h>
 #include <string/stdstring.h>
 #include <lists/string_list.h>
+#include <retro_timers.h>
 
 #include <compat/strl.h>
 #include <compat/getopt.h>
@@ -267,11 +268,9 @@ static void retroarch_msg_queue_init(void)
 {
    retroarch_msg_queue_deinit();
    runloop_msg_queue = msg_queue_new(8);
-   retro_assert(runloop_msg_queue);
 
 #ifdef HAVE_THREADS
    _runloop_msg_queue_lock = slock_new();
-   retro_assert(_runloop_msg_queue_lock);
 #endif
 }
 
